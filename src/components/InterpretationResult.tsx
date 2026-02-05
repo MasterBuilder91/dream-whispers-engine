@@ -1,19 +1,21 @@
-import { useEffect, useRef } from "react";
-import { Book, User, Sparkles } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Book, User, Sparkles, ChevronDown, ChevronUp, BookOpen } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import type { SourceCitation } from "@/hooks/useInterpretDream";
 
 interface InterpretationResultProps {
   interpretation: string;
   isStreaming: boolean;
-  sourcesUsed: number;
+  sources: SourceCitation[];
 }
 
 export function InterpretationResult({ 
   interpretation, 
   isStreaming, 
-  sourcesUsed 
+  sources 
 }: InterpretationResultProps) {
   const contentRef = useRef<HTMLDivElement>(null);
+  const [showSources, setShowSources] = useState(false);
 
   useEffect(() => {
     if (contentRef.current && isStreaming) {
@@ -38,13 +40,51 @@ export function InterpretationResult({
               <h3 className="text-base sm:text-lg font-serif text-gradient-gold">التفسير</h3>
             </div>
             
-            {sourcesUsed > 0 && (
-              <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-muted-foreground">
-                <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gold/70" />
-                <span>{sourcesUsed}</span>
-              </div>
+            {sources.length > 0 && (
+              <button
+                onClick={() => setShowSources(!showSources)}
+                className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-muted-foreground hover:text-gold transition-colors"
+              >
+                <BookOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span>{sources.length} مصدر</span>
+                {showSources ? (
+                  <ChevronUp className="w-3 h-3" />
+                ) : (
+                  <ChevronDown className="w-3 h-3" />
+                )}
+              </button>
             )}
           </div>
+          
+          {/* Sources Panel */}
+          {showSources && sources.length > 0 && (
+            <div className="mt-3 pt-3 border-t border-border/30 space-y-2">
+              <p className="text-xs text-muted-foreground mb-2">المصادر المستخدمة في هذا التفسير:</p>
+              {sources.map((source, idx) => (
+                <div 
+                  key={idx}
+                  className="bg-background/50 rounded-lg p-3 border border-border/30"
+                >
+                  <div className="flex items-start gap-2">
+                    <div className="w-5 h-5 rounded-full bg-gold/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="text-[10px] text-gold font-medium">{idx + 1}</span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-sm font-medium text-foreground">{source.title}</span>
+                        <span className="text-xs px-1.5 py-0.5 rounded bg-gold/10 text-gold">
+                          {source.source}
+                        </span>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-1 line-clamp-2" dir="auto">
+                        {source.excerpt}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Content */}

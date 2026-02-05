@@ -4,7 +4,7 @@ import { InterpretationResult } from "@/components/InterpretationResult";
 import { useInterpretDream } from "@/hooks/useInterpretDream";
 
 const Index = () => {
-  const { interpretation, isLoading, sourcesUsed, interpretDream } = useInterpretDream();
+  const { interpretation, isLoading, sources, interpretDream } = useInterpretDream();
 
   return (
     <div className="min-h-screen starfield geometric-pattern">
@@ -17,7 +17,7 @@ const Index = () => {
           <InterpretationResult 
             interpretation={interpretation}
             isStreaming={isLoading}
-            sourcesUsed={sourcesUsed}
+            sources={sources}
           />
         </main>
 

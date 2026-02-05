@@ -3,10 +3,16 @@ import { toast } from "@/hooks/use-toast";
 
 const INTERPRET_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/interpret-dream`;
 
+export interface SourceCitation {
+  title: string;
+  source: string;
+  excerpt: string;
+}
+
 interface UseInterpretDreamReturn {
   interpretation: string;
   isLoading: boolean;
-  sourcesUsed: number;
+  sources: SourceCitation[];
   interpretDream: (dreamDescription: string) => Promise<void>;
   reset: () => void;
 }
@@ -14,17 +20,17 @@ interface UseInterpretDreamReturn {
 export function useInterpretDream(): UseInterpretDreamReturn {
   const [interpretation, setInterpretation] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [sourcesUsed, setSourcesUsed] = useState(0);
+  const [sources, setSources] = useState<SourceCitation[]>([]);
 
   const reset = useCallback(() => {
     setInterpretation("");
-    setSourcesUsed(0);
+    setSources([]);
   }, []);
 
   const interpretDream = useCallback(async (dreamDescription: string) => {
     setIsLoading(true);
     setInterpretation("");
-    setSourcesUsed(0);
+    setSources([]);
 
     try {
       const response = await fetch(INTERPRET_URL, {
@@ -56,12 +62,6 @@ export function useInterpretDream(): UseInterpretDreamReturn {
         throw new Error("Failed to get interpretation");
       }
 
-      // Get sources count from response header
-      const sourcesHeader = response.headers.get("X-Sources-Used");
-      if (sourcesHeader) {
-        setSourcesUsed(parseInt(sourcesHeader, 10) || 0);
-      }
-
       // Stream the response
       const reader = response.body?.getReader();
       if (!reader) throw new Error("No response body");
@@ -89,6 +89,14 @@ export function useInterpretDream(): UseInterpretDreamReturn {
 
           try {
             const parsed = JSON.parse(jsonStr);
+            
+            // Check if this is our sources metadata
+            if (parsed.type === "sources" && parsed.sources) {
+              setSources(parsed.sources);
+              continue;
+            }
+            
+            // Otherwise it's AI content
             const content = parsed.choices?.[0]?.delta?.content;
             if (content) {
               setInterpretation((prev) => prev + content);
@@ -111,6 +119,7 @@ export function useInterpretDream(): UseInterpretDreamReturn {
           if (jsonStr === "[DONE]") continue;
           try {
             const parsed = JSON.parse(jsonStr);
+            if (parsed.type === "sources") continue;
             const content = parsed.choices?.[0]?.delta?.content;
             if (content) {
               setInterpretation((prev) => prev + content);
@@ -135,7 +144,7 @@ export function useInterpretDream(): UseInterpretDreamReturn {
   return {
     interpretation,
     isLoading,
-    sourcesUsed,
+    sources,
     interpretDream,
     reset,
   };

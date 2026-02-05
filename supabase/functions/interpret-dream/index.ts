@@ -176,14 +176,46 @@ Please provide a comprehensive interpretation${hasBookContext ? " using the clas
       );
     }
 
-    // Return streaming response with sources count header
+    // Create a transform stream to prepend sources metadata
+    const sourcesMetadata = {
+      type: "sources",
+      sources: relevantEntries.map(e => ({
+        title: e.title,
+        source: e.source,
+        excerpt: e.content.slice(0, 200) + "..."
+      }))
+    };
+
+    const encoder = new TextEncoder();
+    const sourcesEvent = encoder.encode(`data: ${JSON.stringify(sourcesMetadata)}\n\n`);
+
+    // Create a new stream that prepends sources then pipes AI response
+    const combinedStream = new ReadableStream({
+      async start(controller) {
+        // Send sources first
+        controller.enqueue(sourcesEvent);
+        
+        // Then pipe the AI response
+        const reader = response.body!.getReader();
+        try {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            controller.enqueue(value);
+          }
+        } finally {
+          reader.releaseLock();
+          controller.close();
+        }
+      }
+    });
+
     const headers = {
       ...corsHeaders,
       "Content-Type": "text/event-stream",
-      "X-Sources-Used": String(relevantEntries.length),
     };
 
-    return new Response(response.body, { headers });
+    return new Response(combinedStream, { headers });
 
   } catch (error) {
     console.error("interpret-dream error:", error);
