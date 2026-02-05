@@ -1,11 +1,36 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { Header } from "@/components/Header";
+import { DreamInput } from "@/components/DreamInput";
+import { InterpretationResult } from "@/components/InterpretationResult";
+import { useInterpretDream } from "@/hooks/useInterpretDream";
 
 const Index = () => {
+  const { interpretation, isLoading, sourcesUsed, interpretDream } = useInterpretDream();
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
+    <div className="min-h-screen starfield geometric-pattern">
+      <div className="relative z-10 container mx-auto px-4 pb-16">
+        <Header />
+        
+        <main className="mt-8 md:mt-12">
+          <DreamInput onSubmit={interpretDream} isLoading={isLoading} />
+          
+          <InterpretationResult 
+            interpretation={interpretation}
+            isStreaming={isLoading}
+            sourcesUsed={sourcesUsed}
+          />
+        </main>
+
+        {/* Footer */}
+        <footer className="mt-16 text-center">
+          <div className="h-px w-full max-w-xs mx-auto bg-gradient-to-r from-transparent via-border to-transparent mb-8" />
+          <p className="text-sm text-muted-foreground">
+            مبني على كتب تفسير الأحلام الكلاسيكية
+          </p>
+          <p className="text-xs text-muted-foreground/60 mt-1">
+            Built with classical dream interpretation texts
+          </p>
+        </footer>
       </div>
     </div>
   );
