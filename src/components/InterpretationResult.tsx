@@ -59,53 +59,82 @@ export function InterpretationResult({
             </div>
           )}
           
-          <div className="prose prose-invert prose-gold max-w-none" dir="auto">
+          <div className="prose prose-invert prose-gold max-w-none">
             <ReactMarkdown
               components={{
-                h1: ({ children }) => (
-                  <h1 className="text-2xl font-serif text-gradient-gold mb-4 mt-6 first:mt-0">
-                    {children}
-                  </h1>
-                ),
-                h2: ({ children }) => (
-                  <h2 className="text-xl font-serif text-gold mb-3 mt-5">
-                    {children}
-                  </h2>
-                ),
-                h3: ({ children }) => (
-                  <h3 className="text-lg font-serif text-gold/90 mb-2 mt-4">
-                    {children}
-                  </h3>
-                ),
-                p: ({ children }) => (
-                  <p className="text-foreground/90 leading-relaxed mb-4 text-base">
-                    {children}
-                  </p>
-                ),
+                h1: ({ children }) => {
+                  const text = String(children);
+                  const isArabic = /[\u0600-\u06FF]/.test(text);
+                  return (
+                    <h1 className="text-2xl font-serif text-gradient-gold mb-4 mt-6 first:mt-0" dir={isArabic ? "rtl" : "ltr"}>
+                      {children}
+                    </h1>
+                  );
+                },
+                h2: ({ children }) => {
+                  const text = String(children);
+                  const isArabic = /[\u0600-\u06FF]/.test(text);
+                  return (
+                    <h2 className="text-xl font-serif text-gold mb-3 mt-5" dir={isArabic ? "rtl" : "ltr"}>
+                      {children}
+                    </h2>
+                  );
+                },
+                h3: ({ children }) => {
+                  const text = String(children);
+                  const isArabic = /[\u0600-\u06FF]/.test(text);
+                  return (
+                    <h3 className="text-lg font-serif text-gold/90 mb-2 mt-4" dir={isArabic ? "rtl" : "ltr"}>
+                      {children}
+                    </h3>
+                  );
+                },
+                p: ({ children }) => {
+                  const text = String(children);
+                  const isArabic = /[\u0600-\u06FF]/.test(text.slice(0, 20));
+                  return (
+                    <p className="text-foreground/90 leading-relaxed mb-4 text-base" dir={isArabic ? "rtl" : "ltr"} style={{ textAlign: isArabic ? "right" : "left" }}>
+                      {children}
+                    </p>
+                  );
+                },
                 ul: ({ children }) => (
-                  <ul className="list-disc list-inside space-y-2 mb-4 text-foreground/85">
+                  <ul className="space-y-2 mb-4 text-foreground/85 list-disc ltr:ml-4 rtl:mr-4">
                     {children}
                   </ul>
                 ),
                 ol: ({ children }) => (
-                  <ol className="list-decimal list-inside space-y-2 mb-4 text-foreground/85">
+                  <ol className="space-y-2 mb-4 text-foreground/85 list-decimal ltr:ml-4 rtl:mr-4">
                     {children}
                   </ol>
                 ),
-                li: ({ children }) => (
-                  <li className="text-foreground/85">{children}</li>
-                ),
+                li: ({ children }) => {
+                  const text = String(children);
+                  const isArabic = /[\u0600-\u06FF]/.test(text.slice(0, 20));
+                  return (
+                    <li className="text-foreground/85" dir={isArabic ? "rtl" : "ltr"} style={{ textAlign: isArabic ? "right" : "left" }}>
+                      {children}
+                    </li>
+                  );
+                },
                 strong: ({ children }) => (
                   <strong className="text-gold font-semibold">{children}</strong>
                 ),
                 em: ({ children }) => (
                   <em className="text-gold-light italic">{children}</em>
                 ),
-                blockquote: ({ children }) => (
-                  <blockquote className="border-r-4 border-gold/50 pr-4 my-4 italic text-foreground/80 bg-gold/5 py-2 rounded-l">
-                    {children}
-                  </blockquote>
-                ),
+                blockquote: ({ children }) => {
+                  const text = String(children);
+                  const isArabic = /[\u0600-\u06FF]/.test(text.slice(0, 20));
+                  return (
+                    <blockquote 
+                      className={`my-4 italic text-foreground/80 bg-gold/5 py-2 ${isArabic ? "border-r-4 pr-4 rounded-l" : "border-l-4 pl-4 rounded-r"} border-gold/50`}
+                      dir={isArabic ? "rtl" : "ltr"}
+                    >
+                      {children}
+                    </blockquote>
+                  );
+                },
               }}
             >
               {interpretation}
