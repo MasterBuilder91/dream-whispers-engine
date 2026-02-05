@@ -14,7 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      dream_interpretations: {
+        Row: {
+          category: string | null
+          content: string
+          created_at: string
+          id: string
+          source: string
+          title: string
+          title_arabic: string | null
+        }
+        Insert: {
+          category?: string | null
+          content: string
+          created_at?: string
+          id?: string
+          source: string
+          title: string
+          title_arabic?: string | null
+        }
+        Update: {
+          category?: string | null
+          content?: string
+          created_at?: string
+          id?: string
+          source?: string
+          title?: string
+          title_arabic?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

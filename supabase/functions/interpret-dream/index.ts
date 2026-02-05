@@ -1,19 +1,13 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-interface DreamEntry {
-  title: string;
-  content: string;
-  source: string;
-}
-
 interface InterpretRequest {
   dreamDescription: string;
-  databaseEntries: DreamEntry[];
 }
 
 serve(async (req) => {
@@ -22,7 +16,7 @@ serve(async (req) => {
   }
 
   try {
-    const { dreamDescription, databaseEntries } = await req.json() as InterpretRequest;
+    const { dreamDescription } = await req.json() as InterpretRequest;
 
     if (!dreamDescription) {
       return new Response(
@@ -36,12 +30,52 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    // Format any database entries for context
-    const formattedEntries = databaseEntries && databaseEntries.length > 0
-      ? databaseEntries
-          .map((entry, i) => `[${i + 1}] ${entry.source}: ${entry.content.slice(0, 600)}`)
-          .join("\n\n")
+    // Initialize Supabase client to search for relevant interpretations
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Extract keywords from the dream description for searching
+    const searchTerms = dreamDescription
+      .toLowerCase()
+      .split(/[\s,،.؟?!]+/)
+      .filter(term => term.length > 2)
+      .slice(0, 10);
+
+    console.log("Searching for dream symbols:", searchTerms);
+
+    // Search for relevant interpretations using full-text search
+    let relevantEntries: { title: string; content: string; source: string }[] = [];
+    
+    if (searchTerms.length > 0) {
+      const searchQuery = searchTerms.join(" | ");
+      
+      const { data: searchResults, error: searchError } = await supabase
+        .from("dream_interpretations")
+        .select("title, title_arabic, content, source")
+        .or(`title.ilike.%${searchTerms[0]}%,title_arabic.ilike.%${searchTerms[0]}%,content.ilike.%${searchTerms[0]}%`)
+        .limit(10);
+
+      if (searchError) {
+        console.error("Search error:", searchError);
+      } else if (searchResults && searchResults.length > 0) {
+        relevantEntries = searchResults.map(r => ({
+          title: r.title_arabic ? `${r.title} (${r.title_arabic})` : r.title,
+          content: r.content,
+          source: r.source === "ibn_sirin" ? "Ibn Sirin" : "Al-Nabulsi"
+        }));
+        console.log(`Found ${relevantEntries.length} relevant interpretations`);
+      }
+    }
+
+    // Format relevant entries for AI context
+    const formattedEntries = relevantEntries.length > 0
+      ? relevantEntries
+          .map((entry, i) => `[${i + 1}] ${entry.source} - "${entry.title}":\n${entry.content.slice(0, 800)}`)
+          .join("\n\n---\n\n")
       : "";
+
+    const hasBookContext = relevantEntries.length > 0;
 
     const systemPrompt = `You are an expert Islamic dream interpreter, deeply knowledgeable in the classical works of Imam Ibn Sirin (653-729 CE) and Sheikh Abdul Ghani al-Nabulsi (1641-1731 CE).
 
@@ -49,44 +83,48 @@ Your interpretations draw from:
 - "Tafsir al-Ahlam al-Kabir" (The Great Book of Dream Interpretation) by Ibn Sirin
 - "Ta'tir al-Anam fi Tafsir al-Manam" (Perfuming People with Dream Interpretation) by Al-Nabulsi
 
+${hasBookContext ? `IMPORTANT: You have been provided with ACTUAL PASSAGES from the classical texts below. You MUST base your interpretation primarily on these authentic sources. Quote them directly when relevant.` : `Note: No direct passages were found in the database for this dream's symbols. Provide interpretation based on your knowledge of the scholars' methodologies.`}
+
 RESPONSE FORMAT:
 Always provide interpretations in BOTH Arabic AND English, structured as follows:
 
 ## التفسير العربي
 
-[Complete interpretation in Arabic, using proper Islamic terminology]
+[Complete interpretation in Arabic, using proper Islamic terminology. If book passages are provided, quote them directly with attribution.]
 
 ## English Interpretation
 
-[Complete interpretation in English]
+[Complete interpretation in English. If book passages are provided, reference them with proper attribution.]
 
 INTERPRETATION GUIDELINES:
 1. Identify the key symbols (رموز) in the dream
-2. Explain their meanings according to Ibn Sirin and Al-Nabulsi
+2. ${hasBookContext ? "Quote directly from the provided classical texts when explaining symbol meanings" : "Explain meanings according to Ibn Sirin and Al-Nabulsi's known methodologies"}
 3. Consider the dreamer's context (if provided) and time of dream
 4. Note any differences between scholars' interpretations
 5. Provide spiritual guidance rooted in Islamic wisdom
 6. Be compassionate and balanced - avoid alarming interpretations
 
-Remember: Dream interpretation (تعبير الرؤيا) is a scholarly art, not an exact science. Different contexts can yield different meanings for the same symbol.
+Remember: Dream interpretation (تعبير الرؤيا) is a scholarly art, not an exact science.
 
-${formattedEntries ? `\nREFERENCE TEXTS FROM CLASSICAL SOURCES:\n${formattedEntries}` : ''}`;
+${formattedEntries ? `\n═══════════════════════════════════════\nCLASSICAL SOURCE TEXTS (USE THESE!):\n═══════════════════════════════════════\n\n${formattedEntries}` : ''}`;
 
     const userPrompt = `الرؤيا / Dream: ${dreamDescription}
 
-Please provide a comprehensive interpretation following Ibn Sirin and Al-Nabulsi's methodology. Include:
+Please provide a comprehensive interpretation${hasBookContext ? " using the classical source texts provided" : ""}.
 
 **Arabic Section (التفسير بالعربية):**
-- الرموز الرئيسية ومعانيها
+- الرموز الرئيسية ومعانيها${hasBookContext ? " مع الاستشهاد بالنصوص" : ""}
 - التفسير الشامل
 - الاختلاف بين العلماء إن وجد
 - النصيحة الروحانية
 
 **English Section:**
-- Main symbols and their meanings
+- Main symbols and their meanings${hasBookContext ? " with citations from the texts" : ""}
 - Comprehensive interpretation
 - Scholarly differences if any
 - Spiritual guidance`;
+
+    console.log(`Sending to AI with ${relevantEntries.length} source references`);
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -125,9 +163,14 @@ Please provide a comprehensive interpretation following Ibn Sirin and Al-Nabulsi
       );
     }
 
-    return new Response(response.body, {
-      headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
-    });
+    // Return streaming response with sources count header
+    const headers = {
+      ...corsHeaders,
+      "Content-Type": "text/event-stream",
+      "X-Sources-Used": String(relevantEntries.length),
+    };
+
+    return new Response(response.body, { headers });
 
   } catch (error) {
     console.error("interpret-dream error:", error);
