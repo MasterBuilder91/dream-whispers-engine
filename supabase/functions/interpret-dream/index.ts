@@ -42,26 +42,36 @@ serve(async (req) => {
       .map((entry, i) => `[${i + 1}] ${entry.source}: ${entry.content.slice(0, 500)}...`)
       .join("\n\n");
 
-    const systemPrompt = `أنت عالم متخصص في تفسير الأحلام وفق المنهج الإسلامي، مستندًا إلى كتب العلماء الكبار كابن سيرين والنابلسي. مهمتك تحليل الرؤى والأحلام بحكمة وتأنٍ.
+    const systemPrompt = `You are a scholar specializing in Islamic dream interpretation, drawing from classical texts by Ibn Sirin and Al-Nabulsi. Your task is to analyze dreams with wisdom and care.
 
-عند تفسير الحلم:
-1. حدد الرموز والعناصر الرئيسية في الحلم
-2. اشرح معاني هذه الرموز وفقًا للتفاسير الكلاسيكية
-3. قدم تفسيرًا شاملًا يراعي السياق الكامل للحلم
-4. اذكر التفاسير المختلفة إن وجدت خلاف بين العلماء
-5. انتهِ بنصيحة روحانية أو توجيه مناسب
+IMPORTANT: Always provide your interpretation in BOTH Arabic AND English. Structure your response with Arabic first, then English translation.
 
-كن محترمًا ولطيفًا، وتذكر أن التفسير ليس علمًا قاطعًا بل اجتهاد.
+When interpreting a dream:
+1. Identify the main symbols and elements in the dream
+2. Explain the meanings of these symbols according to classical interpretations
+3. Provide a comprehensive interpretation considering the full context
+4. Mention different interpretations if scholars disagree
+5. End with spiritual advice or appropriate guidance
 
-${formattedEntries ? `\n\nالنصوص المرجعية من كتب تفسير الأحلام:\n${formattedEntries}` : ''}`;
+Be respectful and kind, and remember that interpretation is not an exact science but scholarly effort.
 
-    const userPrompt = `الرؤيا أو الحلم: ${dreamDescription}
+${formattedEntries ? `\n\nReference texts from dream interpretation books:\n${formattedEntries}` : ''}`;
 
-رجاءً قم بتفسير هذا الحلم مع ذكر:
-- الرموز الرئيسية ومعانيها
-- التفسير الشامل وفقًا لابن سيرين والنابلسي
-- أي اختلافات في التفسير إن وجدت
-- نصيحة أو توجيه مناسب`;
+    const userPrompt = `Dream description: ${dreamDescription}
+
+Please interpret this dream and provide your response in BOTH Arabic and English:
+
+## التفسير بالعربية (Arabic Interpretation)
+[Provide full interpretation in Arabic]
+
+## English Interpretation
+[Provide full interpretation in English]
+
+Include for each language:
+- Main symbols and their meanings
+- Comprehensive interpretation according to Ibn Sirin and Al-Nabulsi
+- Any differences in interpretation if they exist
+- Appropriate advice or guidance`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
