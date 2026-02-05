@@ -32,7 +32,7 @@ export function DreamInput({ onSubmit, isLoading }: DreamInputProps) {
           </div>
           <div>
             <h2 className="text-xl font-serif text-gradient-gold">صف رؤياك</h2>
-            <p className="text-sm text-muted-foreground">Describe your dream in detail</p>
+            <p className="text-sm text-muted-foreground">Describe your dream in Arabic or English</p>
           </div>
         </div>
 
@@ -41,7 +41,7 @@ export function DreamInput({ onSubmit, isLoading }: DreamInputProps) {
             value={dream}
             onChange={(e) => setDream(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="اكتب تفاصيل حلمك هنا... رأيت في منامي أنني..."
+            placeholder="اكتب تفاصيل حلمك هنا... / Describe your dream here..."
             className="min-h-[180px] bg-secondary/30 border-border/50 resize-none text-lg leading-relaxed placeholder:text-muted-foreground/50 focus:ring-2 focus:ring-gold/30 focus:border-gold/50 transition-all rounded-xl"
             dir="auto"
           />
