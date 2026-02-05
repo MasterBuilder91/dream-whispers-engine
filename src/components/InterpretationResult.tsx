@@ -12,7 +12,7 @@ interface InterpretationResultProps {
 export function InterpretationResult({ 
   interpretation, 
   isStreaming, 
-  sources 
+  sources = []
 }: InterpretationResultProps) {
   const contentRef = useRef<HTMLDivElement>(null);
   const [showSources, setShowSources] = useState(false);
