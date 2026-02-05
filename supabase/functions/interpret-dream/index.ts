@@ -17,7 +17,6 @@ interface InterpretRequest {
 }
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
@@ -37,41 +36,57 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    // Format the database entries for the AI context
-    const formattedEntries = databaseEntries
-      .map((entry, i) => `[${i + 1}] ${entry.source}: ${entry.content.slice(0, 500)}...`)
-      .join("\n\n");
+    // Format any database entries for context
+    const formattedEntries = databaseEntries && databaseEntries.length > 0
+      ? databaseEntries
+          .map((entry, i) => `[${i + 1}] ${entry.source}: ${entry.content.slice(0, 600)}`)
+          .join("\n\n")
+      : "";
 
-    const systemPrompt = `You are a scholar specializing in Islamic dream interpretation, drawing from classical texts by Ibn Sirin and Al-Nabulsi. Your task is to analyze dreams with wisdom and care.
+    const systemPrompt = `You are an expert Islamic dream interpreter, deeply knowledgeable in the classical works of Imam Ibn Sirin (653-729 CE) and Sheikh Abdul Ghani al-Nabulsi (1641-1731 CE).
 
-IMPORTANT: Always provide your interpretation in BOTH Arabic AND English. Structure your response with Arabic first, then English translation.
+Your interpretations draw from:
+- "Tafsir al-Ahlam al-Kabir" (The Great Book of Dream Interpretation) by Ibn Sirin
+- "Ta'tir al-Anam fi Tafsir al-Manam" (Perfuming People with Dream Interpretation) by Al-Nabulsi
 
-When interpreting a dream:
-1. Identify the main symbols and elements in the dream
-2. Explain the meanings of these symbols according to classical interpretations
-3. Provide a comprehensive interpretation considering the full context
-4. Mention different interpretations if scholars disagree
-5. End with spiritual advice or appropriate guidance
+RESPONSE FORMAT:
+Always provide interpretations in BOTH Arabic AND English, structured as follows:
 
-Be respectful and kind, and remember that interpretation is not an exact science but scholarly effort.
+## التفسير العربي
 
-${formattedEntries ? `\n\nReference texts from dream interpretation books:\n${formattedEntries}` : ''}`;
-
-    const userPrompt = `Dream description: ${dreamDescription}
-
-Please interpret this dream and provide your response in BOTH Arabic and English:
-
-## التفسير بالعربية (Arabic Interpretation)
-[Provide full interpretation in Arabic]
+[Complete interpretation in Arabic, using proper Islamic terminology]
 
 ## English Interpretation
-[Provide full interpretation in English]
 
-Include for each language:
+[Complete interpretation in English]
+
+INTERPRETATION GUIDELINES:
+1. Identify the key symbols (رموز) in the dream
+2. Explain their meanings according to Ibn Sirin and Al-Nabulsi
+3. Consider the dreamer's context (if provided) and time of dream
+4. Note any differences between scholars' interpretations
+5. Provide spiritual guidance rooted in Islamic wisdom
+6. Be compassionate and balanced - avoid alarming interpretations
+
+Remember: Dream interpretation (تعبير الرؤيا) is a scholarly art, not an exact science. Different contexts can yield different meanings for the same symbol.
+
+${formattedEntries ? `\nREFERENCE TEXTS FROM CLASSICAL SOURCES:\n${formattedEntries}` : ''}`;
+
+    const userPrompt = `الرؤيا / Dream: ${dreamDescription}
+
+Please provide a comprehensive interpretation following Ibn Sirin and Al-Nabulsi's methodology. Include:
+
+**Arabic Section (التفسير بالعربية):**
+- الرموز الرئيسية ومعانيها
+- التفسير الشامل
+- الاختلاف بين العلماء إن وجد
+- النصيحة الروحانية
+
+**English Section:**
 - Main symbols and their meanings
-- Comprehensive interpretation according to Ibn Sirin and Al-Nabulsi
-- Any differences in interpretation if they exist
-- Appropriate advice or guidance`;
+- Comprehensive interpretation
+- Scholarly differences if any
+- Spiritual guidance`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -110,7 +125,6 @@ Include for each language:
       );
     }
 
-    // Stream the response back
     return new Response(response.body, {
       headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
     });
