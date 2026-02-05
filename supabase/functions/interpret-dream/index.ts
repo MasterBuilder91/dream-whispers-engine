@@ -36,24 +36,37 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     // Extract keywords from the dream description for searching
+    // Handle both Arabic and English, remove common particles
+    const arabicParticles = ['في', 'من', 'إلى', 'على', 'عن', 'أن', 'ما', 'لا', 'هذا', 'هذه', 'التي', 'الذي', 'كان', 'كانت', 'رأيت', 'رؤية'];
+    const englishStopWords = ['the', 'a', 'an', 'is', 'are', 'was', 'were', 'i', 'my', 'saw', 'see', 'dream', 'dreamed', 'about', 'and', 'or', 'in', 'on', 'at'];
+    
     const searchTerms = dreamDescription
-      .toLowerCase()
-      .split(/[\s,،.؟?!]+/)
-      .filter(term => term.length > 2)
-      .slice(0, 10);
+      .split(/[\s,،.؟?!؛:]+/)
+      .map(term => term.replace(/^(ال|و|ب|ف|ك|ل)/, '')) // Remove Arabic prefixes
+      .filter(term => 
+        term.length > 1 && 
+        !arabicParticles.includes(term) && 
+        !englishStopWords.includes(term.toLowerCase())
+      )
+      .slice(0, 8);
 
     console.log("Searching for dream symbols:", searchTerms);
 
-    // Search for relevant interpretations using full-text search
+    // Search for relevant interpretations
     let relevantEntries: { title: string; content: string; source: string }[] = [];
     
     if (searchTerms.length > 0) {
-      const searchQuery = searchTerms.join(" | ");
+      // Build OR conditions for each search term
+      const orConditions = searchTerms.flatMap(term => [
+        `title.ilike.%${term}%`,
+        `title_arabic.ilike.%${term}%`,
+        `content.ilike.%${term}%`
+      ]).join(',');
       
       const { data: searchResults, error: searchError } = await supabase
         .from("dream_interpretations")
         .select("title, title_arabic, content, source")
-        .or(`title.ilike.%${searchTerms[0]}%,title_arabic.ilike.%${searchTerms[0]}%,content.ilike.%${searchTerms[0]}%`)
+        .or(orConditions)
         .limit(10);
 
       if (searchError) {
