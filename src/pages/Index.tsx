@@ -8,10 +8,10 @@ const Index = () => {
 
   return (
     <div className="min-h-screen starfield geometric-pattern">
-      <div className="relative z-10 container mx-auto px-4 pb-16">
+      <div className="relative z-10 container mx-auto px-3 sm:px-4 pb-8 sm:pb-16">
         <Header />
         
-        <main className="mt-8 md:mt-12">
+        <main className="mt-4 sm:mt-8 md:mt-12">
           <DreamInput onSubmit={interpretDream} isLoading={isLoading} />
           
           <InterpretationResult 
@@ -22,9 +22,9 @@ const Index = () => {
         </main>
 
         {/* Footer */}
-        <footer className="mt-16 text-center">
-          <div className="h-px w-full max-w-xs mx-auto bg-gradient-to-r from-transparent via-border to-transparent mb-8" />
-          <p className="text-sm text-muted-foreground">
+        <footer className="mt-8 sm:mt-16 text-center">
+          <div className="h-px w-full max-w-xs mx-auto bg-gradient-to-r from-transparent via-border to-transparent mb-4 sm:mb-8" />
+          <p className="text-xs sm:text-sm text-muted-foreground">
             مبني على كتب تفسير الأحلام الكلاسيكية
           </p>
           <p className="text-xs text-muted-foreground/60 mt-1">
