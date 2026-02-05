@@ -27,18 +27,13 @@ export function useInterpretDream(): UseInterpretDreamReturn {
     setSourcesUsed(0);
 
     try {
-      // Call the AI interpretation endpoint directly
-      // Database context will be added when we migrate to Supabase tables
       const response = await fetch(INTERPRET_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
-        body: JSON.stringify({
-          dreamDescription,
-          databaseEntries: [], // Will be populated when database migration is complete
-        }),
+        body: JSON.stringify({ dreamDescription }),
       });
 
       if (!response.ok) {
@@ -59,6 +54,12 @@ export function useInterpretDream(): UseInterpretDreamReturn {
           return;
         }
         throw new Error("Failed to get interpretation");
+      }
+
+      // Get sources count from response header
+      const sourcesHeader = response.headers.get("X-Sources-Used");
+      if (sourcesHeader) {
+        setSourcesUsed(parseInt(sourcesHeader, 10) || 0);
       }
 
       // Stream the response
