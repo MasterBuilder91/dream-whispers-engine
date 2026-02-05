@@ -26,22 +26,22 @@ export function InterpretationResult({
   }
 
   return (
-    <div className="w-full max-w-3xl mx-auto mt-8 fade-in-up" style={{ animationDelay: '0.2s' }}>
+    <div className="w-full max-w-3xl mx-auto mt-4 sm:mt-8 fade-in-up" style={{ animationDelay: '0.2s' }}>
       <div className="dream-card rounded-2xl overflow-hidden">
         {/* Header */}
-        <div className="bg-gradient-to-r from-gold/10 to-accent/10 px-6 py-4 border-b border-border/50">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-gold/20 flex items-center justify-center">
-                <Book className="w-4 h-4 text-gold" />
+        <div className="bg-gradient-to-r from-gold/10 to-accent/10 px-4 sm:px-6 py-3 sm:py-4 border-b border-border/50">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gold/20 flex items-center justify-center flex-shrink-0">
+                <Book className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gold" />
               </div>
-              <h3 className="text-lg font-serif text-gradient-gold">التفسير / Interpretation</h3>
+              <h3 className="text-base sm:text-lg font-serif text-gradient-gold">التفسير</h3>
             </div>
             
             {sourcesUsed > 0 && (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Sparkles className="w-4 h-4 text-gold/70" />
-                <span>{sourcesUsed} references</span>
+              <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-muted-foreground">
+                <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gold/70" />
+                <span>{sourcesUsed}</span>
               </div>
             )}
           </div>
@@ -50,16 +50,16 @@ export function InterpretationResult({
         {/* Content */}
         <div 
           ref={contentRef}
-          className="p-6 md:p-8 max-h-[600px] overflow-y-auto scrollbar-thin"
+          className="p-4 sm:p-6 md:p-8 max-h-[60vh] sm:max-h-[600px] overflow-y-auto scrollbar-thin"
         >
           {isStreaming && !interpretation && (
-            <div className="flex items-center gap-3 text-muted-foreground">
-              <div className="w-5 h-5 border-2 border-gold/30 border-t-gold rounded-full animate-spin" />
-              <span>Analyzing your dream using classical texts...</span>
+            <div className="flex items-center gap-2 sm:gap-3 text-muted-foreground text-sm sm:text-base">
+              <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-gold/30 border-t-gold rounded-full animate-spin flex-shrink-0" />
+              <span>Analyzing dream...</span>
             </div>
           )}
           
-          <div className="prose prose-invert prose-gold max-w-none">
+          <div className="prose prose-invert prose-gold max-w-none prose-sm sm:prose-base">
             <ReactMarkdown
               components={{
                 h1: ({ children }) => {
@@ -147,8 +147,8 @@ export function InterpretationResult({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-border/50 bg-secondary/20">
-          <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
+        <div className="px-4 sm:px-6 py-3 sm:py-4 border-t border-border/50 bg-secondary/20">
+          <div className="flex items-center justify-center gap-3 sm:gap-4 text-xs text-muted-foreground">
             <div className="flex items-center gap-1">
               <User className="w-3 h-3" />
               <span>Ibn Sirin</span>
