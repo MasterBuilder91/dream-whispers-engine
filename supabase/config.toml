@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.import-dream-data]
 verify_jwt = false
+
+[functions.import-sqlite-dreams]
+verify_jwt = false
