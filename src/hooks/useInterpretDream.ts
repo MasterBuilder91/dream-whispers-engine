@@ -1,5 +1,4 @@
 import { useState, useCallback } from "react";
-import { searchDreamEntries, DreamEntry } from "@/lib/dreamDatabase";
 import { toast } from "@/hooks/use-toast";
 
 const INTERPRET_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/interpret-dream`;
@@ -10,49 +9,6 @@ interface UseInterpretDreamReturn {
   sourcesUsed: number;
   interpretDream: (dreamDescription: string) => Promise<void>;
   reset: () => void;
-}
-
-// Extract key Arabic/English symbols from dream description
-function extractKeywords(text: string): string[] {
-  // Common dream symbols in Arabic and English
-  const symbols = [
-    // Arabic symbols
-    'ماء', 'نار', 'بحر', 'نهر', 'جبل', 'شمس', 'قمر', 'نجم', 'سماء',
-    'ميت', 'موت', 'زواج', 'عرس', 'طفل', 'ولد', 'بنت', 'أم', 'أب',
-    'بيت', 'منزل', 'سيارة', 'طائرة', 'قطار', 'سفر', 'طريق',
-    'ذهب', 'فضة', 'مال', 'ثوب', 'لباس', 'طعام', 'خبز', 'لحم',
-    'أسد', 'حية', 'ثعبان', 'كلب', 'قط', 'طير', 'حمام', 'نحل',
-    'صلاة', 'مسجد', 'قرآن', 'حج', 'كعبة', 'رسول', 'نبي',
-    'دم', 'بكاء', 'ضحك', 'خوف', 'فرح', 'حزن', 'غضب',
-    'شعر', 'أسنان', 'عين', 'يد', 'قدم', 'رأس',
-    'شجرة', 'وردة', 'حديقة', 'بستان', 'ثمر',
-    'سجن', 'قصر', 'مدينة', 'قرية', 'سوق',
-    // English symbols
-    'water', 'fire', 'sea', 'river', 'mountain', 'sun', 'moon', 'star', 'sky',
-    'dead', 'death', 'marriage', 'wedding', 'child', 'baby', 'mother', 'father',
-    'house', 'home', 'car', 'plane', 'train', 'travel', 'road', 'path',
-    'gold', 'silver', 'money', 'clothes', 'food', 'bread',
-    'lion', 'snake', 'dog', 'cat', 'bird', 'fish',
-    'prayer', 'mosque', 'quran', 'hajj', 'prophet',
-    'blood', 'cry', 'laugh', 'fear', 'joy', 'sad', 'angry',
-    'hair', 'teeth', 'eye', 'hand', 'foot', 'head',
-    'tree', 'flower', 'garden', 'fruit',
-    'prison', 'palace', 'city', 'market'
-  ];
-  
-  const foundSymbols: string[] = [];
-  const lowerText = text.toLowerCase();
-  
-  for (const symbol of symbols) {
-    if (text.includes(symbol) || lowerText.includes(symbol.toLowerCase())) {
-      foundSymbols.push(symbol);
-    }
-  }
-  
-  // Also extract words that might be symbols (nouns)
-  const words = text.split(/[\s,،.؟?!]+/).filter(w => w.length > 2);
-  
-  return [...new Set([...foundSymbols, ...words.slice(0, 10)])];
 }
 
 export function useInterpretDream(): UseInterpretDreamReturn {
@@ -66,32 +22,13 @@ export function useInterpretDream(): UseInterpretDreamReturn {
   }, []);
 
   const interpretDream = useCallback(async (dreamDescription: string) => {
-    console.log("interpretDream called with:", dreamDescription);
     setIsLoading(true);
     setInterpretation("");
     setSourcesUsed(0);
 
     try {
-      // Step 1: Extract keywords and search the databases
-      const keywords = extractKeywords(dreamDescription);
-      console.log("Extracted keywords:", keywords);
-      
-      let databaseEntries: DreamEntry[] = [];
-      
-      if (keywords.length > 0) {
-        try {
-          const searchResult = await searchDreamEntries(keywords);
-          databaseEntries = searchResult.entries;
-          setSourcesUsed(searchResult.entries.length);
-          console.log(`Found ${searchResult.entries.length} relevant entries`);
-        } catch (dbError) {
-          console.error("Database search failed, continuing without entries:", dbError);
-          // Continue without database entries - AI can still interpret
-        }
-      }
-
-      // Step 2: Call the AI interpretation endpoint
-      console.log("Calling AI interpretation endpoint...");
+      // Call the AI interpretation endpoint directly
+      // Database context will be added when we migrate to Supabase tables
       const response = await fetch(INTERPRET_URL, {
         method: "POST",
         headers: {
@@ -100,11 +37,7 @@ export function useInterpretDream(): UseInterpretDreamReturn {
         },
         body: JSON.stringify({
           dreamDescription,
-          databaseEntries: databaseEntries.map(e => ({
-            title: e.title,
-            content: e.content,
-            source: e.source,
-          })),
+          databaseEntries: [], // Will be populated when database migration is complete
         }),
       });
 
@@ -112,7 +45,7 @@ export function useInterpretDream(): UseInterpretDreamReturn {
         if (response.status === 429) {
           toast({
             title: "Rate Limited",
-            description: "Too many requests. Please wait a moment and try again.",
+            description: "Too many requests. Please wait and try again.",
             variant: "destructive",
           });
           return;
@@ -120,32 +53,31 @@ export function useInterpretDream(): UseInterpretDreamReturn {
         if (response.status === 402) {
           toast({
             title: "Credits Exhausted",
-            description: "AI credits have run out. Please add credits to continue.",
+            description: "AI credits have run out.",
             variant: "destructive",
           });
           return;
         }
-        throw new Error("Failed to interpret dream");
+        throw new Error("Failed to get interpretation");
       }
 
-      // Step 3: Stream the response
+      // Stream the response
       const reader = response.body?.getReader();
       if (!reader) throw new Error("No response body");
 
       const decoder = new TextDecoder();
-      let textBuffer = "";
+      let buffer = "";
 
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
 
-        textBuffer += decoder.decode(value, { stream: true });
+        buffer += decoder.decode(value, { stream: true });
 
-        // Process SSE lines
         let newlineIndex: number;
-        while ((newlineIndex = textBuffer.indexOf("\n")) !== -1) {
-          let line = textBuffer.slice(0, newlineIndex);
-          textBuffer = textBuffer.slice(newlineIndex + 1);
+        while ((newlineIndex = buffer.indexOf("\n")) !== -1) {
+          let line = buffer.slice(0, newlineIndex);
+          buffer = buffer.slice(newlineIndex + 1);
 
           if (line.endsWith("\r")) line = line.slice(0, -1);
           if (line.startsWith(":") || line.trim() === "") continue;
@@ -158,19 +90,18 @@ export function useInterpretDream(): UseInterpretDreamReturn {
             const parsed = JSON.parse(jsonStr);
             const content = parsed.choices?.[0]?.delta?.content;
             if (content) {
-              setInterpretation(prev => prev + content);
+              setInterpretation((prev) => prev + content);
             }
           } catch {
-            // Incomplete JSON, put back and wait
-            textBuffer = line + "\n" + textBuffer;
+            buffer = line + "\n" + buffer;
             break;
           }
         }
       }
 
       // Final flush
-      if (textBuffer.trim()) {
-        for (let raw of textBuffer.split("\n")) {
+      if (buffer.trim()) {
+        for (let raw of buffer.split("\n")) {
           if (!raw) continue;
           if (raw.endsWith("\r")) raw = raw.slice(0, -1);
           if (raw.startsWith(":") || raw.trim() === "") continue;
@@ -181,14 +112,15 @@ export function useInterpretDream(): UseInterpretDreamReturn {
             const parsed = JSON.parse(jsonStr);
             const content = parsed.choices?.[0]?.delta?.content;
             if (content) {
-              setInterpretation(prev => prev + content);
+              setInterpretation((prev) => prev + content);
             }
-          } catch { /* ignore */ }
+          } catch {
+            /* ignore */
+          }
         }
       }
-
     } catch (error) {
-      console.error("Error interpreting dream:", error);
+      console.error("Interpretation error:", error);
       toast({
         title: "Error",
         description: "Failed to interpret dream. Please try again.",

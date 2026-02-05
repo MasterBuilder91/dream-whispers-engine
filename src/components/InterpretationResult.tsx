@@ -35,13 +35,13 @@ export function InterpretationResult({
               <div className="w-8 h-8 rounded-full bg-gold/20 flex items-center justify-center">
                 <Book className="w-4 h-4 text-gold" />
               </div>
-              <h3 className="text-lg font-serif text-gradient-gold">التفسير</h3>
+              <h3 className="text-lg font-serif text-gradient-gold">التفسير / Interpretation</h3>
             </div>
             
             {sourcesUsed > 0 && (
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Sparkles className="w-4 h-4 text-gold/70" />
-                <span>{sourcesUsed} مرجع</span>
+                <span>{sourcesUsed} references</span>
               </div>
             )}
           </div>
@@ -55,7 +55,7 @@ export function InterpretationResult({
           {isStreaming && !interpretation && (
             <div className="flex items-center gap-3 text-muted-foreground">
               <div className="w-5 h-5 border-2 border-gold/30 border-t-gold rounded-full animate-spin" />
-              <span>جاري استخراج التفسير من الكتب...</span>
+              <span>Analyzing your dream using classical texts...</span>
             </div>
           )}
           
@@ -122,12 +122,12 @@ export function InterpretationResult({
           <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
             <div className="flex items-center gap-1">
               <User className="w-3 h-3" />
-              <span>ابن سيرين</span>
+              <span>Ibn Sirin</span>
             </div>
             <div className="w-1 h-1 bg-muted-foreground/50 rounded-full" />
             <div className="flex items-center gap-1">
               <User className="w-3 h-3" />
-              <span>النابلسي</span>
+              <span>Al-Nabulsi</span>
             </div>
           </div>
         </div>
