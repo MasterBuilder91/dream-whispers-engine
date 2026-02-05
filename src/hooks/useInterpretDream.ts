@@ -66,6 +66,7 @@ export function useInterpretDream(): UseInterpretDreamReturn {
   }, []);
 
   const interpretDream = useCallback(async (dreamDescription: string) => {
+    console.log("interpretDream called with:", dreamDescription);
     setIsLoading(true);
     setInterpretation("");
     setSourcesUsed(0);
@@ -78,13 +79,19 @@ export function useInterpretDream(): UseInterpretDreamReturn {
       let databaseEntries: DreamEntry[] = [];
       
       if (keywords.length > 0) {
-        const searchResult = await searchDreamEntries(keywords);
-        databaseEntries = searchResult.entries;
-        setSourcesUsed(searchResult.entries.length);
-        console.log(`Found ${searchResult.entries.length} relevant entries`);
+        try {
+          const searchResult = await searchDreamEntries(keywords);
+          databaseEntries = searchResult.entries;
+          setSourcesUsed(searchResult.entries.length);
+          console.log(`Found ${searchResult.entries.length} relevant entries`);
+        } catch (dbError) {
+          console.error("Database search failed, continuing without entries:", dbError);
+          // Continue without database entries - AI can still interpret
+        }
       }
 
       // Step 2: Call the AI interpretation endpoint
+      console.log("Calling AI interpretation endpoint...");
       const response = await fetch(INTERPRET_URL, {
         method: "POST",
         headers: {
