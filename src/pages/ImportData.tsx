@@ -36,7 +36,7 @@ export default function ImportData() {
   const loadDatabases = async () => {
     try {
       const SQL = await initSqlJs({
-        locateFile: (file) => `https://sql.js.org/dist/${file}`,
+        locateFile: () => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/sql-wasm.wasm`,
       });
 
       const dbFiles = [
@@ -63,68 +63,135 @@ export default function ImportData() {
 
           console.log(`${dbFile.name} tables:`, tables);
 
-          // Try to extract entries - common column patterns
           let entries: DreamEntry[] = [];
 
-          for (const table of tables) {
+          // For Ibn Sirin - try dream_interpretation_analysis first, then fall back to pages
+          if (dbFile.source === "ibn_sirin") {
+            // Try dream_interpretation_analysis table first
             try {
-              // Get columns
-              const columnsResult = db.exec(`PRAGMA table_info(${table})`);
-              const columns = columnsResult[0]?.values.map((v) => String(v[1])) || [];
-              console.log(`${dbFile.name} - ${table} columns:`, columns);
-
-              // Try to read all data
-              const dataResult = db.exec(`SELECT * FROM ${table} LIMIT 5000`);
-              if (dataResult[0]) {
+              const dataResult = db.exec(`SELECT symbol, interpretation, context, symbolic_category FROM dream_interpretation_analysis`);
+              if (dataResult[0] && dataResult[0].values.length > 0) {
                 const rows = dataResult[0].values;
-                const cols = dataResult[0].columns;
-
-                console.log(`${dbFile.name} - ${table}: ${rows.length} rows, columns: ${cols.join(", ")}`);
-
-                // Map columns to our schema
-                const titleIdx = cols.findIndex((c) => 
-                  c.toLowerCase().includes("title") || 
-                  c.toLowerCase().includes("name") ||
-                  c.toLowerCase() === "word"
-                );
-                const titleArabicIdx = cols.findIndex((c) => 
-                  c.toLowerCase().includes("arabic") || 
-                  c.toLowerCase().includes("word_ar")
-                );
-                const contentIdx = cols.findIndex((c) => 
-                  c.toLowerCase().includes("content") || 
-                  c.toLowerCase().includes("meaning") ||
-                  c.toLowerCase().includes("interpretation") ||
-                  c.toLowerCase().includes("text") ||
-                  c.toLowerCase().includes("description")
-                );
-                const categoryIdx = cols.findIndex((c) => 
-                  c.toLowerCase().includes("category") || 
-                  c.toLowerCase().includes("chapter")
-                );
-
-                // If we can't find title but have content, use first text column as title
-                const firstTextIdx = titleIdx >= 0 ? titleIdx : cols.findIndex((c, i) => 
-                  i !== contentIdx && typeof rows[0]?.[i] === "string"
-                );
-
+                console.log(`Ibn Sirin dream_interpretation_analysis: ${rows.length} rows`);
+                
                 for (const row of rows) {
-                  const title = row[titleIdx >= 0 ? titleIdx : firstTextIdx];
-                  const content = row[contentIdx >= 0 ? contentIdx : (titleIdx >= 0 ? titleIdx : 0)];
+                  const symbol = row[0];
+                  const interpretation = row[1];
+                  const context = row[2];
+                  const category = row[3];
                   
-                  if (title && content) {
+                  if (symbol && interpretation && String(interpretation).trim().length > 10) {
+                    const fullContent = context 
+                      ? `${interpretation}\n\nسياق: ${context}`
+                      : String(interpretation);
+                    
                     entries.push({
-                      title: String(title).slice(0, 200),
-                      title_arabic: titleArabicIdx >= 0 ? String(row[titleArabicIdx] || "") : undefined,
-                      content: String(content),
+                      title: String(symbol).slice(0, 200),
+                      title_arabic: String(symbol),
+                      content: fullContent,
                       source: dbFile.source,
-                      category: categoryIdx >= 0 ? String(row[categoryIdx] || "") : undefined,
+                      category: category ? String(category) : undefined,
                     });
                   }
                 }
               }
-            } catch (tableErr) {
-              console.error(`Error reading table ${table}:`, tableErr);
+            } catch (err) {
+              console.error("Error reading Ibn Sirin analysis:", err);
+            }
+
+            // If no entries from analysis table, use pages table
+            if (entries.length === 0) {
+              try {
+                const pagesResult = db.exec(`SELECT page_title, clean_text, dream_categories, dream_symbols FROM pages WHERE clean_text IS NOT NULL AND clean_text != ''`);
+                if (pagesResult[0]) {
+                  const rows = pagesResult[0].values;
+                  console.log(`Ibn Sirin pages: ${rows.length} rows with content`);
+                  
+                  for (const row of rows) {
+                    const pageTitle = row[0];
+                    const cleanText = row[1];
+                    const categories = row[2];
+                    const symbols = row[3];
+                    
+                    if (cleanText && String(cleanText).trim().length > 50) {
+                      // Use page title or first symbol as title
+                      let title = pageTitle ? String(pageTitle) : "";
+                      if (!title && symbols) {
+                        try {
+                          const symbolsData = JSON.parse(String(symbols));
+                          if (Array.isArray(symbolsData) && symbolsData.length > 0) {
+                            title = symbolsData[0];
+                          }
+                        } catch {
+                          title = String(symbols).slice(0, 50);
+                        }
+                      }
+                      if (!title) {
+                        title = `صفحة ابن سيرين`;
+                      }
+                      
+                      entries.push({
+                        title: title.slice(0, 200),
+                        title_arabic: title,
+                        content: String(cleanText),
+                        source: dbFile.source,
+                        category: categories ? String(categories) : undefined,
+                      });
+                    }
+                  }
+                }
+              } catch (err) {
+                console.error("Error reading Ibn Sirin pages:", err);
+              }
+            }
+          }
+
+          // For Al-Nabulsi - use dream_symbols table
+          if (dbFile.source === "al_nabulsi") {
+            try {
+              const dataResult = db.exec(`SELECT symbol_name, interpretation_text, symbol_category, positive_meaning, negative_meaning, contextual_factors, prophetic_basis FROM dream_symbols`);
+              if (dataResult[0]) {
+                const rows = dataResult[0].values;
+                console.log(`Al-Nabulsi dream_symbols: ${rows.length} rows`);
+                
+                for (const row of rows) {
+                  const symbolName = row[0];
+                  const interpretation = row[1];
+                  const category = row[2];
+                  const positive = row[3];
+                  const negative = row[4];
+                  const contextual = row[5];
+                  const prophetic = row[6];
+                  
+                  if (symbolName && interpretation && String(interpretation).trim().length > 10) {
+                    // Build comprehensive content
+                    let fullContent = String(interpretation);
+                    
+                    if (positive && String(positive).trim()) {
+                      fullContent += `\n\nالمعنى الإيجابي: ${positive}`;
+                    }
+                    if (negative && String(negative).trim()) {
+                      fullContent += `\n\nالمعنى السلبي: ${negative}`;
+                    }
+                    if (contextual && String(contextual).trim()) {
+                      fullContent += `\n\nالعوامل السياقية: ${contextual}`;
+                    }
+                    if (prophetic && String(prophetic).trim()) {
+                      fullContent += `\n\nالأساس النبوي: ${prophetic}`;
+                    }
+                    
+                    entries.push({
+                      title: String(symbolName).slice(0, 200),
+                      title_arabic: String(symbolName),
+                      content: fullContent,
+                      source: dbFile.source,
+                      category: category ? String(category) : undefined,
+                    });
+                  }
+                }
+              }
+            } catch (err) {
+              console.error("Error reading Al-Nabulsi symbols:", err);
             }
           }
 
