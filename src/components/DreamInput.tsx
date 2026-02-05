@@ -18,7 +18,9 @@ export function DreamInput({ onSubmit, isLoading }: DreamInputProps) {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && e.ctrlKey) {
+    // Submit on Enter (without Shift for new lines)
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
       handleSubmit();
     }
   };
@@ -47,7 +49,7 @@ export function DreamInput({ onSubmit, isLoading }: DreamInputProps) {
           />
           <div className="absolute bottom-3 right-3 flex items-center gap-2 text-xs text-muted-foreground">
             <Sparkles className="w-3 h-3" />
-            <span>Ctrl + Enter to submit</span>
+            <span>Press Enter to submit</span>
           </div>
         </div>
 
