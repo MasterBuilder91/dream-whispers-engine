@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { Moon, Sparkles, Send } from "lucide-react";
+import { Moon, Sparkles } from "lucide-react";
 
 interface DreamInputProps {
   onSubmit: (dream: string) => void;
@@ -48,34 +47,20 @@ export function DreamInput({ onSubmit, isLoading }: DreamInputProps) {
             dir="auto"
             enterKeyHint="send"
           />
-          <div className="absolute bottom-2 right-2 sm:bottom-3 sm:right-3 flex items-center gap-2 text-xs text-muted-foreground/70">
-            <Sparkles className="w-3 h-3" />
-            <span>Press enter to start interpretation</span>
-          </div>
         </div>
 
-        <div className="mt-4 sm:mt-6 flex flex-col gap-3 sm:gap-4">
-          <Button
-            onClick={handleSubmit}
-            disabled={!dream.trim() || isLoading}
-            size="lg"
-            className="w-full sm:w-auto sm:self-end bg-gradient-gold hover:opacity-90 text-primary-foreground font-medium px-8 py-6 sm:py-4 rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-gold/20 disabled:opacity-50 text-base"
-          >
-            {isLoading ? (
-              <span className="flex items-center gap-2">
-                <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
-                جاري التفسير...
-              </span>
-            ) : (
-              <span className="flex items-center gap-2">
-                <Send className="w-4 h-4" />
-                فسّر الحلم
-              </span>
-            )}
-          </Button>
-          <p className="text-xs sm:text-sm text-muted-foreground text-center sm:hidden">
-            سيتم تحليل حلمك باستخدام كتب ابن سيرين والنابلسي
-          </p>
+        <div className="mt-4 flex items-center justify-center gap-2 text-sm text-muted-foreground">
+          {isLoading ? (
+            <span className="flex items-center gap-2 text-gold">
+              <div className="w-4 h-4 border-2 border-gold/30 border-t-gold rounded-full animate-spin" />
+              جاري التفسير... Interpreting...
+            </span>
+          ) : (
+            <span className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-gold" />
+              <span className="font-medium">Press Enter ↵ to start interpretation</span>
+            </span>
+          )}
         </div>
       </div>
     </div>
