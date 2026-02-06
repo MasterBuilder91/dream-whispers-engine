@@ -22,16 +22,55 @@ export default function Auth() {
   const [loading, setLoading] = useState(false);
   const [oauthLoading, setOauthLoading] = useState<"google" | "apple" | null>(null);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [processingOAuth, setProcessingOAuth] = useState(false);
   
   const { signIn, signUp, user } = useAuth();
   const navigate = useNavigate();
 
+  // Process OAuth callback on mount
+  useEffect(() => {
+    const processOAuthCallback = async () => {
+      // Check if this is an OAuth callback (has code or error in URL)
+      const urlParams = new URLSearchParams(window.location.search);
+      const hasOAuthParams = urlParams.has('code') || urlParams.has('error') || 
+                             window.location.hash.includes('access_token');
+      
+      if (hasOAuthParams && !processingOAuth) {
+        setProcessingOAuth(true);
+        try {
+          // The lovable auth library should handle the callback automatically
+          // by checking the URL params when signInWithOAuth is called
+          const { error } = await lovable.auth.signInWithOAuth("google", {
+            redirect_uri: `${window.location.origin}/auth`,
+          });
+          
+          if (error) {
+            console.error("OAuth callback error:", error);
+            toast.error("Failed to complete sign in. Please try again.");
+          } else {
+            toast.success("Welcome!");
+            navigate("/journal");
+          }
+        } catch (err) {
+          console.error("OAuth callback error:", err);
+          toast.error("Failed to complete sign in. Please try again.");
+        } finally {
+          setProcessingOAuth(false);
+          // Clean up URL params
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+      }
+    };
+
+    processOAuthCallback();
+  }, [navigate, processingOAuth]);
+
   // Redirect if already logged in
   useEffect(() => {
-    if (user) {
+    if (user && !processingOAuth) {
       navigate("/journal");
     }
-  }, [user, navigate]);
+  }, [user, navigate, processingOAuth]);
 
   const validateForm = () => {
     try {
@@ -94,7 +133,7 @@ export default function Auth() {
     setOauthLoading(provider);
     try {
       const { error } = await lovable.auth.signInWithOAuth(provider, {
-        redirect_uri: window.location.origin,
+        redirect_uri: `${window.location.origin}/auth`,
       });
       
       if (error) {
@@ -108,6 +147,18 @@ export default function Auth() {
       setOauthLoading(null);
     }
   };
+
+  // Show loading state while processing OAuth callback
+  if (processingOAuth) {
+    return (
+      <div className="min-h-screen starfield geometric-pattern flex items-center justify-center p-4">
+        <div className="relative z-10 text-center">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-gold" />
+          <p className="text-muted-foreground">Completing sign in...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen starfield geometric-pattern flex items-center justify-center p-4">
