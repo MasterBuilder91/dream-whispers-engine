@@ -46,10 +46,12 @@ export function DreamInput({ onSubmit, isLoading }: DreamInputProps) {
             placeholder="اكتب تفاصيل حلمك هنا... / Describe your dream here..."
             className="min-h-[140px] sm:min-h-[180px] bg-secondary/30 border-border/50 resize-none text-base sm:text-lg leading-relaxed placeholder:text-muted-foreground/50 focus:ring-2 focus:ring-gold/30 focus:border-gold/50 transition-all rounded-xl"
             dir="auto"
+            enterKeyHint="send"
           />
           <div className="absolute bottom-2 right-2 sm:bottom-3 sm:right-3 flex items-center gap-2 text-xs text-muted-foreground/70">
             <Sparkles className="w-3 h-3" />
             <span className="hidden sm:inline">Press Enter to submit</span>
+            <span className="sm:hidden">Tap send on keyboard</span>
           </div>
         </div>
 
