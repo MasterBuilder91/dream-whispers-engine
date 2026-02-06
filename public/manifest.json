@@ -1,7 +1,7 @@
 {
-  "name": "تفسير الأحلام - Dream Interpretation",
-  "short_name": "Dreams",
-  "description": "AI-powered dream interpretation based on classical Islamic texts",
+  "name": "Dream Companion - رفيق الأحلام",
+  "short_name": "Dream Companion",
+  "description": "Authentic dream interpretation powered by classical texts from Ibn Sirin & Al-Nabulsi",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0a0a12",

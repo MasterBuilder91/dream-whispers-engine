@@ -113,8 +113,8 @@ const Index = () => {
                   <Moon className="w-5 h-5 text-primary-foreground" />
                 </div>
                 <div>
-                  <p className="font-serif text-lg text-gold">Dream Whispers Engine</p>
-                  <p className="text-xs text-muted-foreground">تفسير الأحلام</p>
+                  <p className="font-serif text-lg text-gold">Dream Companion</p>
+                  <p className="text-xs text-muted-foreground">رفيق الأحلام</p>
                 </div>
               </div>
               
@@ -131,7 +131,7 @@ const Index = () => {
             
             <div className="mt-8 pt-6 border-t border-border text-center">
               <p className="text-xs text-muted-foreground/50">
-                © {new Date().getFullYear()} Dream Whispers Engine. 
+                © {new Date().getFullYear()} Dream Companion. 
                 AI is a tool, not the interpreter. All interpretations sourced from classical scholars.
               </p>
             </div>
