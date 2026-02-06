@@ -3,8 +3,6 @@ import { Link } from "react-router-dom";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { DifferentiatorSection } from "@/components/landing/DifferentiatorSection";
 import { SourcesShowcase } from "@/components/landing/SourcesShowcase";
-import { AdBanner } from "@/components/landing/AdBanner";
-import { AdvertiseSection } from "@/components/landing/AdvertiseSection";
 import { FAQSection } from "@/components/landing/FAQSection";
 import { DreamInput } from "@/components/DreamInput";
 import { InterpretationResult } from "@/components/InterpretationResult";
@@ -72,24 +70,13 @@ const Index = () => {
           </div>
         </nav>
 
-        {/* Ad Banner - Top */}
-        <div className="container mx-auto px-4 mt-4">
-          <AdBanner position="top" />
-        </div>
-
         {/* Hero Section */}
         <HeroSection onStartInterpreting={scrollToInterpret} />
 
         {/* Differentiator Section */}
         <DifferentiatorSection />
 
-        {/* Ad Banner - Middle */}
-        <div className="container mx-auto px-4 py-8">
-          <AdBanner position="middle" />
-        </div>
-
         {/* Sources Showcase */}
-        <SourcesShowcase />
 
         {/* Dream Interpretation Section */}
         <section ref={interpretSectionRef} className="py-12 sm:py-20" id="interpret">
@@ -115,14 +102,6 @@ const Index = () => {
 
         {/* FAQ Section */}
         <FAQSection />
-
-        {/* Advertise Section */}
-        <AdvertiseSection />
-
-        {/* Ad Banner - Bottom */}
-        <div className="container mx-auto px-4 pb-8">
-          <AdBanner position="bottom" />
-        </div>
 
         {/* Footer */}
         <footer className="border-t border-border py-8 sm:py-12">
