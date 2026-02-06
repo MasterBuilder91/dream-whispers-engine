@@ -50,8 +50,7 @@ export function DreamInput({ onSubmit, isLoading }: DreamInputProps) {
           />
           <div className="absolute bottom-2 right-2 sm:bottom-3 sm:right-3 flex items-center gap-2 text-xs text-muted-foreground/70">
             <Sparkles className="w-3 h-3" />
-            <span className="hidden sm:inline">Press Enter to submit</span>
-            <span className="sm:hidden">Tap send on keyboard</span>
+            <span>Press enter to start interpretation</span>
           </div>
         </div>
 
