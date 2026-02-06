@@ -35,50 +35,111 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Extract keywords from the dream description for searching
-    // Handle both Arabic and English, remove common particles
-    const arabicParticles = ['في', 'من', 'إلى', 'على', 'عن', 'أن', 'ما', 'لا', 'هذا', 'هذه', 'التي', 'الذي', 'كان', 'كانت', 'رأيت', 'رؤية'];
-    const englishStopWords = ['the', 'a', 'an', 'is', 'are', 'was', 'were', 'i', 'my', 'saw', 'see', 'dream', 'dreamed', 'about', 'and', 'or', 'in', 'on', 'at'];
+    // Step 1: Use AI to extract meaningful dream symbols
+    console.log("Extracting symbols from dream:", dreamDescription.slice(0, 100) + "...");
     
-    const searchTerms = dreamDescription
-      .split(/[\s,،.؟?!؛:]+/)
-      .map(term => term.replace(/^(ال|و|ب|ف|ك|ل)/, '')) // Remove Arabic prefixes
-      .filter(term => 
-        term.length > 1 && 
-        !arabicParticles.includes(term) && 
-        !englishStopWords.includes(term.toLowerCase())
-      )
-      .slice(0, 8);
+    const symbolExtractionResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash-lite",
+        messages: [
+          { 
+            role: "system", 
+            content: `You are a dream symbol extractor. Extract the key symbolic elements from dreams that would appear in classical Islamic dream interpretation books.
 
-    console.log("Searching for dream symbols:", searchTerms);
+Focus on:
+- Objects (water, snake, house, car, money, food, etc.)
+- Animals (dog, cat, bird, lion, etc.)
+- People types (father, mother, king, stranger, enemy, etc.)
+- Actions (flying, falling, running, fighting, crying, etc.)
+- Natural elements (sun, moon, rain, fire, sea, etc.)
+- Body parts (teeth, hair, hand, eye, etc.)
+- Emotions/states (death, marriage, pregnancy, fear, etc.)
 
-    // Search for relevant interpretations
+Return ONLY a JSON array of 3-8 symbol keywords in both English and Arabic where applicable.
+Example: ["snake", "ثعبان", "water", "ماء", "father", "أب"]
+
+Do NOT include:
+- Proper names of people
+- Generic words (the, is, was, my, dreamt, saw)
+- Pronouns or connectors` 
+          },
+          { role: "user", content: `Extract dream symbols from: "${dreamDescription}"` }
+        ],
+        temperature: 0.1,
+      }),
+    });
+
+    let searchTerms: string[] = [];
+    
+    if (symbolExtractionResponse.ok) {
+      const symbolData = await symbolExtractionResponse.json();
+      const symbolText = symbolData.choices?.[0]?.message?.content || "";
+      
+      // Parse the JSON array from the response
+      const jsonMatch = symbolText.match(/\[[\s\S]*\]/);
+      if (jsonMatch) {
+        try {
+          searchTerms = JSON.parse(jsonMatch[0]);
+          console.log("AI extracted symbols:", searchTerms);
+        } catch {
+          console.error("Failed to parse symbol JSON:", symbolText);
+        }
+      }
+    } else {
+      console.error("Symbol extraction failed:", symbolExtractionResponse.status);
+    }
+
+    // Fallback: simple keyword extraction if AI fails
+    if (searchTerms.length === 0) {
+      const arabicParticles = ['في', 'من', 'إلى', 'على', 'عن', 'أن', 'ما', 'لا', 'هذا', 'هذه', 'التي', 'الذي', 'كان', 'كانت', 'رأيت', 'رؤية'];
+      const englishStopWords = ['the', 'a', 'an', 'is', 'are', 'was', 'were', 'i', 'my', 'me', 'saw', 'see', 'dream', 'dreamed', 'dreamt', 'about', 'and', 'or', 'in', 'on', 'at', 'to', 'of', 'that', 'this', 'it', 'her', 'his', 'she', 'he', 'they', 'them', 'going', 'off', 'with'];
+      
+      searchTerms = dreamDescription
+        .split(/[\s,،.؟?!؛:]+/)
+        .map(term => term.replace(/^(ال|و|ب|ف|ك|ل)/, ''))
+        .filter(term => 
+          term.length > 2 && 
+          !arabicParticles.includes(term) && 
+          !englishStopWords.includes(term.toLowerCase())
+        )
+        .slice(0, 6);
+      console.log("Fallback extracted terms:", searchTerms);
+    }
+
+    // Step 2: Search for relevant interpretations using extracted symbols
     let relevantEntries: { title: string; content: string; source: string }[] = [];
     
     if (searchTerms.length > 0) {
-      // Build OR conditions for each search term
-      const orConditions = searchTerms.flatMap(term => [
-        `title.ilike.%${term}%`,
-        `title_arabic.ilike.%${term}%`,
-        `content.ilike.%${term}%`
-      ]).join(',');
-      
-      const { data: searchResults, error: searchError } = await supabase
-        .from("dream_interpretations")
-        .select("title, title_arabic, content, source")
-        .or(orConditions)
-        .limit(10);
-
-      if (searchError) {
-        console.error("Search error:", searchError);
-      } else if (searchResults && searchResults.length > 0) {
-        relevantEntries = searchResults.map(r => ({
-          title: r.title_arabic ? `${r.title} (${r.title_arabic})` : r.title,
-          content: r.content,
-          source: r.source === "ibn_sirin" ? "Ibn Sirin" : "Al-Nabulsi"
-        }));
-        console.log(`Found ${relevantEntries.length} relevant interpretations`);
+      // Search primarily by title (more accurate) for each symbol
+      for (const term of searchTerms.slice(0, 6)) {
+        if (relevantEntries.length >= 8) break;
+        
+        const { data: titleMatches, error: titleError } = await supabase
+          .from("dream_interpretations")
+          .select("title, title_arabic, content, source")
+          .or(`title.ilike.%${term}%,title_arabic.ilike.%${term}%`)
+          .limit(3);
+        
+        if (!titleError && titleMatches) {
+          for (const match of titleMatches) {
+            // Avoid duplicates
+            if (!relevantEntries.find(e => e.title.includes(match.title))) {
+              relevantEntries.push({
+                title: match.title_arabic ? `${match.title} (${match.title_arabic})` : match.title,
+                content: match.content,
+                source: match.source === "ibn_sirin" ? "Ibn Sirin" : "Al-Nabulsi"
+              });
+            }
+          }
+        }
       }
+      
+      console.log(`Found ${relevantEntries.length} relevant interpretations for symbols`);
     }
 
     // Format relevant entries for AI context
