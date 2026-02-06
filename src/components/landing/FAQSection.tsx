@@ -25,7 +25,7 @@ export function FAQSection() {
     },
     {
       question: "Is this service free?",
-      answer: "Yes, the core dream interpretation service is free. Knowledge of this sacred science shouldn't be gatekept behind paywalls. We sustain the service through halal-compliant advertising."
+      answer: "You get 1 free interpretation per week without signing up. Create a free account to unlock unlimited interpretations and a dream journal (saves up to 5 dreams). Premium subscribers ($4.99/mo) get unlimited storage, AI pattern analysis that tracks recurring symbols, and mood trend insights."
     },
     {
       question: "What languages are supported?",

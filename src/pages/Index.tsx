@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { DifferentiatorSection } from "@/components/landing/DifferentiatorSection";
@@ -6,16 +6,31 @@ import { SourcesShowcase } from "@/components/landing/SourcesShowcase";
 import { FAQSection } from "@/components/landing/FAQSection";
 import { DreamInput } from "@/components/DreamInput";
 import { InterpretationResult } from "@/components/InterpretationResult";
+import { SignupPrompt } from "@/components/SignupPrompt";
 import { useInterpretDream } from "@/hooks/useInterpretDream";
+import { useFreeLimit } from "@/hooks/useFreeLimit";
 import { useAuth } from "@/contexts/AuthContext";
-import { Moon, BookOpen, User, Crown } from "lucide-react";
+import { Moon, BookOpen, User, Crown, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Index = () => {
   const { interpretation, isLoading, sources, interpretDream } = useInterpretDream();
   const { user, subscription } = useAuth();
+  const { canInterpret, remainingCount, nextResetDate, recordUsage, weeklyLimit } = useFreeLimit();
   const interpretSectionRef = useRef<HTMLDivElement>(null);
   const [hasInteracted, setHasInteracted] = useState(false);
+  const [pendingInterpretation, setPendingInterpretation] = useState(false);
+
+  // Track when interpretation completes to record usage
+  useEffect(() => {
+    if (pendingInterpretation && interpretation && !isLoading) {
+      // Interpretation finished - record usage for non-authenticated users
+      if (!user) {
+        recordUsage();
+      }
+      setPendingInterpretation(false);
+    }
+  }, [interpretation, isLoading, pendingInterpretation, user, recordUsage]);
 
   const scrollToInterpret = () => {
     setHasInteracted(true);
@@ -24,8 +39,12 @@ const Index = () => {
 
   const handleInterpret = (dream: string) => {
     setHasInteracted(true);
+    setPendingInterpretation(true);
     interpretDream(dream);
   };
+
+  // Determine if user can interpret
+  const isLimitReached = !user && !canInterpret;
 
   return (
     <div className="min-h-screen starfield geometric-pattern">
@@ -77,6 +96,7 @@ const Index = () => {
         <DifferentiatorSection />
 
         {/* Sources Showcase */}
+        <SourcesShowcase />
 
         {/* Dream Interpretation Section */}
         <section ref={interpretSectionRef} className="py-12 sm:py-20" id="interpret">
@@ -89,14 +109,49 @@ const Index = () => {
                 Enter your dream below and receive authentic interpretations from classical sources
               </p>
             </div>
-            
-            <DreamInput onSubmit={handleInterpret} isLoading={isLoading} />
-            
-            <InterpretationResult 
-              interpretation={interpretation}
-              isStreaming={isLoading}
-              sources={sources}
-            />
+
+            {/* Show limit info for non-authenticated users */}
+            {!user && canInterpret && (
+              <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground mb-6">
+                <Clock className="w-4 h-4" />
+                <span>
+                  {remainingCount} free interpretation{remainingCount !== 1 ? "s" : ""} remaining this week.
+                </span>
+                <Link to="/auth" className="text-gold hover:underline font-medium">
+                  Sign up for unlimited →
+                </Link>
+              </div>
+            )}
+
+            {/* Show limit reached prompt OR dream input */}
+            {isLimitReached ? (
+              <SignupPrompt variant="limit-reached" nextResetDate={nextResetDate} />
+            ) : (
+              <>
+                <DreamInput 
+                  onSubmit={handleInterpret} 
+                  isLoading={isLoading}
+                />
+                
+                <InterpretationResult 
+                  interpretation={interpretation}
+                  isStreaming={isLoading}
+                  sources={sources}
+                />
+
+                {/* Show signup benefits after interpretation for non-authenticated users */}
+                {!user && interpretation && !isLoading && (
+                  <div className="mt-12 max-w-lg mx-auto">
+                    <div className="text-center mb-6">
+                      <p className="text-sm text-muted-foreground">
+                        Want to save this interpretation? Track patterns over time?
+                      </p>
+                    </div>
+                    <SignupPrompt variant="upgrade-benefits" />
+                  </div>
+                )}
+              </>
+            )}
           </div>
         </section>
 
