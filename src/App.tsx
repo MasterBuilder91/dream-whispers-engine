@@ -7,6 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Journal from "./pages/Journal";
+import Install from "./pages/Install";
 import ImportData from "./pages/ImportData";
 import NotFound from "./pages/NotFound";
 
@@ -24,6 +25,7 @@ function App() {
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/journal" element={<Journal />} />
+              <Route path="/install" element={<Install />} />
               <Route path="/import" element={<ImportData />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
