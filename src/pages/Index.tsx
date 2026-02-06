@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { DifferentiatorSection } from "@/components/landing/DifferentiatorSection";
 import { SourcesShowcase } from "@/components/landing/SourcesShowcase";
@@ -8,10 +9,13 @@ import { FAQSection } from "@/components/landing/FAQSection";
 import { DreamInput } from "@/components/DreamInput";
 import { InterpretationResult } from "@/components/InterpretationResult";
 import { useInterpretDream } from "@/hooks/useInterpretDream";
-import { Moon, BookOpen } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { Moon, BookOpen, User, Crown } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const Index = () => {
   const { interpretation, isLoading, sources, interpretDream } = useInterpretDream();
+  const { user, subscription } = useAuth();
   const interpretSectionRef = useRef<HTMLDivElement>(null);
   const [hasInteracted, setHasInteracted] = useState(false);
 
@@ -36,19 +40,35 @@ const Index = () => {
             </div>
             <span className="font-serif text-lg text-gold">تفسير الأحلام</span>
           </div>
-          <div className="hidden sm:flex items-center gap-6 text-sm">
-            <a href="#why-different" className="text-muted-foreground hover:text-gold transition-colors">
-              Why Different
-            </a>
-            <a href="#sources" className="text-muted-foreground hover:text-gold transition-colors">
-              Sources
-            </a>
-            <a href="#faq" className="text-muted-foreground hover:text-gold transition-colors">
-              FAQ
-            </a>
-            <a href="#advertise" className="text-muted-foreground hover:text-gold transition-colors">
-              Advertise
-            </a>
+          <div className="flex items-center gap-4 sm:gap-6 text-sm">
+            <div className="hidden sm:flex items-center gap-6">
+              <a href="#why-different" className="text-muted-foreground hover:text-gold transition-colors">
+                Why Different
+              </a>
+              <a href="#sources" className="text-muted-foreground hover:text-gold transition-colors">
+                Sources
+              </a>
+              <a href="#faq" className="text-muted-foreground hover:text-gold transition-colors">
+                FAQ
+              </a>
+            </div>
+            
+            {user ? (
+              <Link to="/journal">
+                <Button variant="outline" size="sm" className="border-gold/30 hover:bg-gold/10">
+                  {subscription.subscribed && <Crown className="w-3.5 h-3.5 mr-1.5 text-gold" />}
+                  <User className="w-3.5 h-3.5 mr-1.5" />
+                  Journal
+                </Button>
+              </Link>
+            ) : (
+              <Link to="/auth">
+                <Button variant="outline" size="sm" className="border-gold/30 hover:bg-gold/10">
+                  <User className="w-3.5 h-3.5 mr-1.5" />
+                  Sign In
+                </Button>
+              </Link>
+            )}
           </div>
         </nav>
 
