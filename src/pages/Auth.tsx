@@ -30,44 +30,48 @@ export default function Auth() {
   // Process OAuth callback on mount
   useEffect(() => {
     const processOAuthCallback = async () => {
-      // Check if this is an OAuth callback (has code or error in URL)
       const urlParams = new URLSearchParams(window.location.search);
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
       const hasOAuthParams = urlParams.has('code') || urlParams.has('error') || 
-                             window.location.hash.includes('access_token');
+                             hashParams.has('access_token') || hashParams.has('error');
       
       if (hasOAuthParams && !processingOAuth) {
         setProcessingOAuth(true);
+        
+        // Clean up URL params first
+        window.history.replaceState({}, document.title, window.location.pathname);
+        
         try {
-          // The lovable auth library should handle the callback automatically
-          // by checking the URL params when signInWithOAuth is called
-          const { error } = await lovable.auth.signInWithOAuth("google", {
+          // Call signInWithOAuth to process the callback tokens
+          const result = await lovable.auth.signInWithOAuth("google", {
             redirect_uri: `${window.location.origin}/auth`,
           });
           
-          if (error) {
-            console.error("OAuth callback error:", error);
+          // Only show error if there's an actual error and we didn't just redirect
+          if (result.error && !result.redirected) {
+            console.error("OAuth callback error:", result.error);
             toast.error("Failed to complete sign in. Please try again.");
-          } else {
-            toast.success("Welcome!");
-            navigate("/journal");
+            setProcessingOAuth(false);
           }
+          // If successful, the auth state change listener will handle redirect
         } catch (err) {
           console.error("OAuth callback error:", err);
           toast.error("Failed to complete sign in. Please try again.");
-        } finally {
           setProcessingOAuth(false);
-          // Clean up URL params
-          window.history.replaceState({}, document.title, window.location.pathname);
         }
       }
     };
 
     processOAuthCallback();
-  }, [navigate, processingOAuth]);
+  }, []);
 
-  // Redirect if already logged in
+  // Redirect when user is authenticated
   useEffect(() => {
-    if (user && !processingOAuth) {
+    if (user) {
+      if (processingOAuth) {
+        toast.success("Welcome!");
+      }
+      setProcessingOAuth(false);
       navigate("/journal");
     }
   }, [user, navigate, processingOAuth]);
