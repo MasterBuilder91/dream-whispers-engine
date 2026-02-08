@@ -296,7 +296,7 @@ export function DreamChat({ initialDream, initialInterpretation }: DreamChatProp
         )}
 
         {/* Input Area */}
-        <div className="p-4 sm:p-6 border-t border-border/50 bg-secondary/20">
+        <div className="p-4 sm:p-6 border-t border-border/50 bg-secondary/20 relative z-20">
           <div className="flex gap-3">
             <Textarea
               ref={textareaRef}
@@ -308,9 +308,10 @@ export function DreamChat({ initialDream, initialInterpretation }: DreamChatProp
                   ? "اكتب حلمك هنا... / Describe your dream here..." 
                   : "اسأل المزيد... / Ask a follow-up question..."
               }
-              className="flex-1 min-h-[60px] max-h-[120px] bg-secondary/30 border-border/50 resize-none text-sm sm:text-base placeholder:text-muted-foreground/50 focus:ring-2 focus:ring-gold/30 focus:border-gold/50 rounded-xl"
+              className="flex-1 min-h-[60px] max-h-[120px] bg-secondary/30 border-border/50 resize-none text-sm sm:text-base placeholder:text-muted-foreground/50 focus:ring-2 focus:ring-gold/30 focus:border-gold/50 rounded-xl relative z-30"
               dir="auto"
               disabled={isLimitReached}
+              autoFocus
             />
             <Button
               onClick={handleSubmit}
