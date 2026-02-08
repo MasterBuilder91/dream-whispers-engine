@@ -62,6 +62,19 @@ export function useInterpretDream(): UseInterpretDreamReturn {
         throw new Error("Failed to get interpretation");
       }
 
+      const contentType = response.headers.get("content-type") || "";
+      
+      // Handle JSON response (no sources found case)
+      if (contentType.includes("application/json")) {
+        const data = await response.json();
+        if (data.noSourcesFound) {
+          setInterpretation(data.interpretation);
+          setSources([]);
+          return;
+        }
+        throw new Error(data.error || "Unknown error");
+      }
+
       // Stream the response
       const reader = response.body?.getReader();
       if (!reader) throw new Error("No response body");

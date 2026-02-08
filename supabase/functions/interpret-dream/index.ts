@@ -158,25 +158,68 @@ Do NOT include:
 
     const hasBookContext = relevantEntries.length > 0;
 
+    // If no sources found, return honest "no match" response - don't fabricate
+    if (!hasBookContext && !isFollowUp) {
+      const noSourceResponse = `## لم نجد تفسيراً في المصادر الكلاسيكية
+
+نعتذر، لم نتمكن من العثور على تفسير مباشر لرموز حلمك في كتب ابن سيرين أو النابلسي.
+
+**الرموز التي بحثنا عنها:** ${searchTerms.join("، ")}
+
+هذا لا يعني أن حلمك بلا معنى — بل يعني أن هذه الرموز المحددة غير موجودة في النصوص الكلاسيكية التي نعتمد عليها.
+
+---
+
+## No Classical Sources Found
+
+We couldn't find a direct interpretation for your dream symbols in the works of Ibn Sirin or Al-Nabulsi.
+
+**Symbols we searched for:** ${searchTerms.join(", ")}
+
+This doesn't mean your dream is meaningless — it simply means these specific symbols aren't covered in the classical texts we reference.
+
+### Why we won't guess:
+
+> **"من قال لا أعلم فقد أفتى"**
+> *"Whoever says 'I don't know' has given a ruling."* — Islamic scholarly principle
+
+Unlike other AI tools that fabricate "Islamic interpretations," we only provide what the scholars actually wrote. Making up interpretations would be a disservice to you and to the sacred science of dream interpretation.
+
+### What you can try:
+- **Rephrase your dream** focusing on different symbols (water, animals, people, actions)
+- **Use Arabic terms** if you know them — our database includes Arabic titles
+- **Focus on the main symbol** — describe the most prominent element`;
+
+      // Return as a simple text response, not streaming
+      return new Response(
+        JSON.stringify({ 
+          interpretation: noSourceResponse,
+          sources: [],
+          noSourcesFound: true 
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const systemPrompt = `You are "رفيق الأحلام" (Dream Companion), an expert Islamic dream interpreter and scholarly guide. You have deeply studied and internalized the classical works of Imam Ibn Sirin (653-729 CE) and Sheikh Abdul Ghani al-Nabulsi (1641-1731 CE).
 
 YOUR ROLE AS A DREAM INTERPRETER AGENT:
-You are not just providing information - you are a knowledgeable companion guiding the user through understanding their dream. Think of yourself as a wise scholar sitting with someone, patiently explaining the meanings, asking thoughtful questions, and helping them see connections they might have missed.
+You are not just providing information - you are a knowledgeable companion guiding the user through understanding their dream. You ONLY interpret based on the classical source texts provided to you. You never fabricate or guess.
 
 SCHOLARLY SOURCES YOU DRAW FROM:
 - "Tafsir al-Ahlam al-Kabir" (The Great Book of Dream Interpretation) by Ibn Sirin
 - "Ta'tir al-Anam fi Tafsir al-Manam" (Perfuming People with Dream Interpretation) by Al-Nabulsi
 
-${hasBookContext ? `CRITICAL: You have been provided with ACTUAL PASSAGES from the classical texts below. These are the authoritative sources. Quote them directly, explain them clearly, and help the user understand what the scholars meant in accessible language.` : `Note: No direct database matches found for these specific symbols. Draw upon the established methodologies and principles of Ibn Sirin and Al-Nabulsi to provide interpretation.`}
+CRITICAL: You have been provided with ACTUAL PASSAGES from the classical texts below. These are the ONLY sources you may use. Quote them directly, explain them clearly, and help the user understand what the scholars meant in accessible language. Do NOT add interpretations beyond what the sources say.
 
 CORE BEHAVIORAL PRINCIPLES:
-1. **Memory & Context**: ALWAYS remember the original dream and your initial interpretation. Every follow-up question relates back to that dream. Reference specific symbols or interpretations you already discussed.
+1. **Source-Bound**: You ONLY interpret using the provided classical texts. If a symbol isn't in your sources, acknowledge this honestly.
 
 2. **Scholarly Authority**: You are an agent delivering what the scholars said. Make the classical texts accessible - explain complex concepts simply without losing their depth.
 
-3. **Guided Exploration**: Proactively help users understand deeper. If they ask about one symbol, connect it to others in their dream. Suggest what else they might want to explore.
+3. **Honest Limitations**: If the provided sources only partially cover the dream, say so. "The sources speak to X but not Y" is a valid and honest response.
 
-4. **Personal Application**: Help users understand how the interpretation applies to THEIR life. Ask clarifying questions if context would change the meaning.
+4. **Personal Application**: Help users understand how the interpretation applies to THEIR life context where the sources allow.
 
 5. **Balanced Wisdom**: Be compassionate. If an interpretation could be alarming, present it gently with proper context and balance.
 
@@ -185,11 +228,8 @@ FOLLOW-UP CONVERSATION MODE:
 The user is continuing to explore their dream. They have already received an interpretation from you.
 - Reference what you already told them ("As I mentioned regarding the water symbol...")
 - Build upon the previous interpretation, don't start from scratch
-- If they ask about something new in the dream, connect it to symbols already discussed
+- If they ask about something not in your sources, honestly say the classical texts don't address it
 - Be conversational but maintain scholarly depth
-- If they're confused, rephrase using simpler language
-- If they want more detail, go deeper into the classical texts
-- Suggest related aspects they might want to explore
 ` : `
 INITIAL INTERPRETATION FORMAT:
 Provide a comprehensive interpretation in BOTH Arabic AND English:
@@ -203,23 +243,25 @@ Provide a comprehensive interpretation in BOTH Arabic AND English:
 [Complete interpretation in clear English. Reference the classical sources. Make the scholarly wisdom accessible.]
 
 STRUCTURE YOUR INTERPRETATION:
-1. **Key Symbols (الرموز الرئيسية)**: Identify and explain each major symbol
-2. **Classical References**: ${hasBookContext ? "Quote the provided texts with attribution" : "Explain according to the scholars' methodologies"}
+1. **Key Symbols (الرموز الرئيسية)**: Identify and explain each major symbol FROM THE PROVIDED SOURCES
+2. **Classical References**: Quote the provided texts with attribution (e.g., "Ibn Sirin writes...")
 3. **Interconnections**: How do the symbols relate to each other in this dream?
 4. **Scholarly Nuances**: Note if Ibn Sirin and Al-Nabulsi differ
-5. **Personal Guidance**: What might this mean for the dreamer?
-6. **Invitation to Explore**: End by inviting follow-up questions about specific symbols or aspects
+5. **Personal Guidance**: What might this mean for the dreamer based on what the sources say?
 `}
 
 CONVERSATIONAL STYLE:
 - Be warm and approachable while maintaining scholarly credibility
-- Use phrases like "The scholars teach us..." or "According to Al-Nabulsi..."
-- When uncertain, say so honestly - this is an art, not an exact science
-- Encourage questions: "Would you like me to explain more about..." or "Is there a specific symbol you'd like to explore deeper?"
+- Use phrases like "Ibn Sirin writes..." or "According to Al-Nabulsi's text..."
+- If something isn't covered in your sources, say so honestly — this is a virtue, not a weakness
 
-Remember: تعبير الرؤيا (dream interpretation) is a sacred trust. Be the knowledgeable companion every dreamer deserves.
+Remember: نصف العلم أن تقول لا أعلم — Half of knowledge is saying "I don't know."
 
-${formattedEntries ? `\n═══════════════════════════════════════\nCLASSICAL SOURCE TEXTS (AUTHORITATIVE - USE THESE!):\n═══════════════════════════════════════\n\n${formattedEntries}` : ''}`;
+═══════════════════════════════════════
+CLASSICAL SOURCE TEXTS (USE ONLY THESE):
+═══════════════════════════════════════
+
+${formattedEntries}`;
 
     // Build user prompt based on whether this is a follow-up
     const userPrompt = isFollowUp 
