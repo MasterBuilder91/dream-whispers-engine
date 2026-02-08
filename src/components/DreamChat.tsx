@@ -193,7 +193,7 @@ export function DreamChat() {
     }
   };
 
-  const isPremium = subscription.subscribed;
+  const isPremium = subscription.subscribed || subscription.isAdmin;
 
   return (
     <div className="w-full max-w-3xl mx-auto">
