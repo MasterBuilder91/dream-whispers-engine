@@ -14,6 +14,7 @@ export const SUBSCRIPTION_TIERS = {
 
 interface SubscriptionState {
   subscribed: boolean;
+  isAdmin: boolean;
   productId: string | null;
   subscriptionEnd: string | null;
   loading: boolean;
@@ -38,6 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [subscription, setSubscription] = useState<SubscriptionState>({
     subscribed: false,
+    isAdmin: false,
     productId: null,
     subscriptionEnd: null,
     loading: true,
@@ -47,6 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!session) {
       setSubscription({
         subscribed: false,
+        isAdmin: false,
         productId: null,
         subscriptionEnd: null,
         loading: false,
@@ -61,6 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       setSubscription({
         subscribed: data?.subscribed || false,
+        isAdmin: data?.is_admin || false,
         productId: data?.product_id || null,
         subscriptionEnd: data?.subscription_end || null,
         loading: false,
@@ -92,6 +96,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } else {
           setSubscription({
             subscribed: false,
+            isAdmin: false,
             productId: null,
             subscriptionEnd: null,
             loading: false,

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Moon, Send, RefreshCw, Crown, Lock, BookOpen, ChevronDown, ChevronUp } from "lucide-react";
+import { Moon, Send, RefreshCw, Crown, Lock, BookOpen, ChevronDown, ChevronUp, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useDreamChat, ChatMessage, SourceCitation } from "@/hooks/useDreamChat";
@@ -220,7 +220,13 @@ export function DreamChat() {
                   {remainingMessages === Infinity ? "∞" : remainingMessages} left today
                 </div>
               )}
-              {isPremium && (
+              {isPremium && subscription.isAdmin && (
+                <div className="flex items-center gap-1 text-xs text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-full">
+                  <Shield className="w-3 h-3" />
+                  Admin
+                </div>
+              )}
+              {isPremium && !subscription.isAdmin && (
                 <div className="flex items-center gap-1 text-xs text-gold bg-gold/10 px-2 py-1 rounded-full">
                   <Crown className="w-3 h-3" />
                   Premium
