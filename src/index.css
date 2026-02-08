@@ -165,6 +165,7 @@
       radial-gradient(1px 1px at 50% 10%, hsl(var(--star) / 0.6) 0.5px, transparent 0);
     opacity: 0.4;
     animation: twinkle 8s ease-in-out infinite alternate;
+    pointer-events: none;
   }
 
   @keyframes twinkle {
