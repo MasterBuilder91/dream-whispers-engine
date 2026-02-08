@@ -61,9 +61,27 @@ function setLocalMessageCount(count: number): void {
   localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data));
 }
 
-export function useDreamChat(): UseDreamChatReturn {
+export function useDreamChat(initialDream?: string, initialInterpretation?: string): UseDreamChatReturn {
   const { user, subscription } = useAuth();
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  
+  // Initialize with prior context if provided
+  const initialMessages: ChatMessage[] = [];
+  if (initialDream && initialInterpretation) {
+    initialMessages.push({
+      id: crypto.randomUUID(),
+      role: "user",
+      content: initialDream,
+      timestamp: new Date(),
+    });
+    initialMessages.push({
+      id: crypto.randomUUID(),
+      role: "assistant",
+      content: initialInterpretation,
+      timestamp: new Date(),
+    });
+  }
+  
+  const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
   const [isLoading, setIsLoading] = useState(false);
   const [messageCount, setMessageCount] = useState(0);
 
