@@ -6,8 +6,15 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
 interface InterpretRequest {
   dreamDescription: string;
+  conversationHistory?: ChatMessage[];
+  isFollowUp?: boolean;
 }
 
 serve(async (req) => {
@@ -16,7 +23,7 @@ serve(async (req) => {
   }
 
   try {
-    const { dreamDescription } = await req.json() as InterpretRequest;
+    const { dreamDescription, conversationHistory = [], isFollowUp = false } = await req.json() as InterpretRequest;
 
     if (!dreamDescription) {
       return new Response(
@@ -159,6 +166,17 @@ Your interpretations draw from:
 
 ${hasBookContext ? `IMPORTANT: You have been provided with ACTUAL PASSAGES from the classical texts below. You MUST base your interpretation primarily on these authentic sources. Quote them directly when relevant.` : `Note: No direct passages were found in the database for this dream's symbols. Provide interpretation based on your knowledge of the scholars' methodologies.`}
 
+${isFollowUp ? `
+CONVERSATION MODE:
+You are in a conversation with the user about their dream. They may:
+- Ask follow-up questions about specific symbols
+- Request clarification on your interpretation
+- Want to explore certain aspects deeper
+- Ask about related themes or personal application
+- Inquire about differences between scholars
+
+Respond naturally to their questions while maintaining the scholarly tone. You don't need to repeat the full interpretation - focus on answering their specific question. Keep responses conversational but grounded in the classical texts.
+` : `
 RESPONSE FORMAT:
 Always provide interpretations in BOTH Arabic AND English, structured as follows:
 
@@ -177,12 +195,16 @@ INTERPRETATION GUIDELINES:
 4. Note any differences between scholars' interpretations
 5. Provide spiritual guidance rooted in Islamic wisdom
 6. Be compassionate and balanced - avoid alarming interpretations
+`}
 
-Remember: Dream interpretation (تعبير الرؤيا) is a scholarly art, not an exact science.
+Remember: Dream interpretation (تعبير الرؤيا) is a scholarly art, not an exact science. Be engaging and encourage the user to explore their dream deeper.
 
 ${formattedEntries ? `\n═══════════════════════════════════════\nCLASSICAL SOURCE TEXTS (USE THESE!):\n═══════════════════════════════════════\n\n${formattedEntries}` : ''}`;
 
-    const userPrompt = `الرؤيا / Dream: ${dreamDescription}
+    // Build user prompt based on whether this is a follow-up
+    const userPrompt = isFollowUp 
+      ? dreamDescription  // For follow-ups, just send the user's question directly
+      : `الرؤيا / Dream: ${dreamDescription}
 
 Please provide a comprehensive interpretation${hasBookContext ? " using the classical source texts provided" : ""}.
 
@@ -198,7 +220,26 @@ Please provide a comprehensive interpretation${hasBookContext ? " using the clas
 - Scholarly differences if any
 - Spiritual guidance`;
 
-    console.log(`Sending to AI with ${relevantEntries.length} source references`);
+    console.log(`Sending to AI with ${relevantEntries.length} source references, isFollowUp: ${isFollowUp}, history: ${conversationHistory.length} messages`);
+
+    // Build messages array with conversation history
+    const aiMessages: Array<{ role: string; content: string }> = [
+      { role: "system", content: systemPrompt },
+    ];
+    
+    // Add conversation history (exclude current message since we'll add it separately)
+    if (conversationHistory.length > 1) {
+      // Include all messages except the last one (which is the current user message)
+      for (let i = 0; i < conversationHistory.length - 1; i++) {
+        aiMessages.push({
+          role: conversationHistory[i].role,
+          content: conversationHistory[i].content,
+        });
+      }
+    }
+    
+    // Add the current user prompt
+    aiMessages.push({ role: "user", content: userPrompt });
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -208,10 +249,7 @@ Please provide a comprehensive interpretation${hasBookContext ? " using the clas
       },
       body: JSON.stringify({
         model: "google/gemini-3-flash-preview",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt },
-        ],
+        messages: aiMessages,
         stream: true,
       }),
     });
