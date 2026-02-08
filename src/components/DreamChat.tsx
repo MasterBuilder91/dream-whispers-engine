@@ -159,7 +159,12 @@ function MessageBubble({
   );
 }
 
-export function DreamChat() {
+interface DreamChatProps {
+  initialDream?: string;
+  initialInterpretation?: string;
+}
+
+export function DreamChat({ initialDream, initialInterpretation }: DreamChatProps) {
   const { user, subscription } = useAuth();
   const { 
     messages, 
@@ -168,7 +173,7 @@ export function DreamChat() {
     resetChat, 
     remainingMessages, 
     isLimitReached 
-  } = useDreamChat();
+  } = useDreamChat(initialDream, initialInterpretation);
   
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
