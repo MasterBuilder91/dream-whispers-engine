@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { DifferentiatorSection } from "@/components/landing/DifferentiatorSection";
@@ -6,42 +6,27 @@ import { SourcesShowcase } from "@/components/landing/SourcesShowcase";
 import { FAQSection } from "@/components/landing/FAQSection";
 import { DreamInput } from "@/components/DreamInput";
 import { InterpretationResult } from "@/components/InterpretationResult";
-import { DreamChat } from "@/components/DreamChat";
 import { useInterpretDream } from "@/hooks/useInterpretDream";
 import { useAuth } from "@/contexts/AuthContext";
-import { Moon, BookOpen, User, Crown, MessageCircle, RefreshCw } from "lucide-react";
+import { Moon, BookOpen, User, Crown, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Index = () => {
   const { user, subscription } = useAuth();
   const interpretSectionRef = useRef<HTMLDivElement>(null);
   const { interpretation, isLoading, sources, interpretDream, reset } = useInterpretDream();
-  const [showChat, setShowChat] = useState(false);
-  const [initialDream, setInitialDream] = useState("");
 
   const scrollToInterpret = () => {
     interpretSectionRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   const handleDreamSubmit = (dream: string) => {
-    setInitialDream(dream);
-    setShowChat(false);
     interpretDream(dream);
-  };
-
-  const handleNewDream = () => {
-    reset();
-    setShowChat(false);
-    setInitialDream("");
-  };
-
-  const handleContinueChat = () => {
-    setShowChat(true);
   };
 
   return (
     <div className="min-h-screen starfield geometric-pattern">
-      <div className="relative" style={{ zIndex: 10 }}>
+      <div className="relative z-10">
         {/* Navigation */}
         <nav className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -103,55 +88,30 @@ const Index = () => {
               </p>
             </div>
 
-            {!showChat ? (
-              <>
-                <DreamInput 
-                  onSubmit={handleDreamSubmit} 
-                  isLoading={isLoading}
-                  disabled={false}
-                />
+            <DreamInput 
+              onSubmit={handleDreamSubmit} 
+              isLoading={isLoading}
+              disabled={false}
+            />
 
-                <InterpretationResult 
-                  interpretation={interpretation} 
-                  isStreaming={isLoading}
-                  sources={sources}
-                />
+            <InterpretationResult 
+              interpretation={interpretation} 
+              isStreaming={isLoading}
+              sources={sources}
+            />
 
-                {/* Action buttons after interpretation */}
-                {interpretation && !isLoading && (
-                  <div className="w-full max-w-3xl mx-auto mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
-                    <Button
-                      onClick={handleContinueChat}
-                      className="bg-gradient-gold hover:opacity-90 text-primary-foreground"
-                    >
-                      <MessageCircle className="w-4 h-4 mr-2" />
-                      Ask Follow-up Questions
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={handleNewDream}
-                      className="border-gold/30 hover:bg-gold/10"
-                    >
-                      <RefreshCw className="w-4 h-4 mr-2" />
-                      New Dream
-                    </Button>
-                  </div>
-                )}
-              </>
-            ) : (
-              <>
-                <DreamChat initialDream={initialDream} initialInterpretation={interpretation} />
-                <div className="w-full max-w-3xl mx-auto mt-6 flex justify-center">
-                  <Button
-                    variant="outline"
-                    onClick={handleNewDream}
-                    className="border-gold/30 hover:bg-gold/10"
-                  >
-                    <RefreshCw className="w-4 h-4 mr-2" />
-                    Start New Dream
-                  </Button>
-                </div>
-              </>
+            {/* New Dream button after interpretation */}
+            {interpretation && !isLoading && (
+              <div className="w-full max-w-3xl mx-auto mt-6 flex justify-center">
+                <Button
+                  variant="outline"
+                  onClick={reset}
+                  className="border-gold/30 hover:bg-gold/10"
+                >
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                  New Dream
+                </Button>
+              </div>
             )}
           </div>
         </section>
