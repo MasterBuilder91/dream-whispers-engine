@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -82,8 +82,14 @@ export function useDreamChat(initialDream?: string, initialInterpretation?: stri
   }
   
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
+  const messagesRef = useRef<ChatMessage[]>(initialMessages);
   const [isLoading, setIsLoading] = useState(false);
   const [messageCount, setMessageCount] = useState(0);
+  
+  // Keep ref in sync with state
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
 
   const isPremium = subscription.subscribed || subscription.isAdmin;
   useEffect(() => {
@@ -131,6 +137,9 @@ export function useDreamChat(initialDream?: string, initialInterpretation?: stri
       });
       return;
     }
+    
+    // Use ref for current messages to avoid stale closure
+    const currentMessages = messagesRef.current;
 
     // Add user message immediately
     const userMessage: ChatMessage = {
@@ -150,8 +159,8 @@ export function useDreamChat(initialDream?: string, initialInterpretation?: stri
       setLocalMessageCount(newCount);
     }
 
-    // Prepare conversation history for API
-    const conversationHistory = messages.map((m) => ({
+    // Prepare conversation history for API (use current messages from ref)
+    const conversationHistory = currentMessages.map((m) => ({
       role: m.role,
       content: m.content,
     }));
@@ -167,7 +176,7 @@ export function useDreamChat(initialDream?: string, initialInterpretation?: stri
         body: JSON.stringify({ 
           dreamDescription: content,
           conversationHistory,
-          isFollowUp: messages.length > 0,
+          isFollowUp: currentMessages.length > 0,
         }),
       });
 
@@ -301,7 +310,7 @@ export function useDreamChat(initialDream?: string, initialInterpretation?: stri
     } finally {
       setIsLoading(false);
     }
-  }, [messages, messageCount, user, isLimitReached]);
+  }, [messageCount, user, isLimitReached]);
 
   return {
     messages,
