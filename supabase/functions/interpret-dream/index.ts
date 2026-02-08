@@ -119,12 +119,13 @@ Do NOT include:
     }
 
     // Step 2: Search for relevant interpretations using extracted symbols
-    let relevantEntries: { title: string; content: string; source: string }[] = [];
+    // MULTI-LAYER SEARCH: title matches first, then content matches for broader context
+    let relevantEntries: { title: string; content: string; source: string; matchType: string }[] = [];
     
     if (searchTerms.length > 0) {
-      // Search primarily by title (more accurate) for each symbol
-      for (const term of searchTerms.slice(0, 6)) {
-        if (relevantEntries.length >= 8) break;
+      // Layer 1: Direct title matches (highest relevance)
+      for (const term of searchTerms.slice(0, 8)) {
+        if (relevantEntries.length >= 12) break;
         
         const { data: titleMatches, error: titleError } = await supabase
           .from("dream_interpretations")
@@ -134,19 +135,47 @@ Do NOT include:
         
         if (!titleError && titleMatches) {
           for (const match of titleMatches) {
-            // Avoid duplicates
             if (!relevantEntries.find(e => e.title.includes(match.title))) {
               relevantEntries.push({
                 title: match.title_arabic ? `${match.title} (${match.title_arabic})` : match.title,
                 content: match.content,
-                source: match.source === "ibn_sirin" ? "Ibn Sirin" : "Al-Nabulsi"
+                source: match.source === "ibn_sirin" ? "Ibn Sirin" : "Al-Nabulsi",
+                matchType: "direct"
               });
             }
           }
         }
       }
       
-      console.log(`Found ${relevantEntries.length} relevant interpretations for symbols`);
+      console.log(`Layer 1 (title matches): found ${relevantEntries.length} entries`);
+      
+      // Layer 2: Content matches — find entries that DISCUSS these symbols even if not the title
+      if (relevantEntries.length < 6) {
+        for (const term of searchTerms.slice(0, 6)) {
+          if (relevantEntries.length >= 12) break;
+          
+          const { data: contentMatches, error: contentError } = await supabase
+            .from("dream_interpretations")
+            .select("title, title_arabic, content, source")
+            .ilike("content", `%${term}%`)
+            .limit(4);
+          
+          if (!contentError && contentMatches) {
+            for (const match of contentMatches) {
+              if (!relevantEntries.find(e => e.title.includes(match.title))) {
+                relevantEntries.push({
+                  title: match.title_arabic ? `${match.title} (${match.title_arabic})` : match.title,
+                  content: match.content,
+                  source: match.source === "ibn_sirin" ? "Ibn Sirin" : "Al-Nabulsi",
+                  matchType: "contextual"
+                });
+              }
+            }
+          }
+        }
+        
+        console.log(`Layer 2 (content matches): total ${relevantEntries.length} entries`);
+      }
     }
 
     // Step 3: If no direct matches, try conceptual mapping (modern → classical)
@@ -197,10 +226,11 @@ If the items are already classical (snake, water, father), return them as-is.`
             const classicalSymbols = JSON.parse(jsonMatch[0]);
             console.log("Conceptual mapping result:", classicalSymbols);
             
-            // Search again with classical equivalents
+            // Search again with classical equivalents — both title AND content
             for (const term of classicalSymbols.slice(0, 8)) {
-              if (relevantEntries.length >= 8) break;
+              if (relevantEntries.length >= 12) break;
               
+              // Title matches for mapped concepts
               const { data: titleMatches, error: titleError } = await supabase
                 .from("dream_interpretations")
                 .select("title, title_arabic, content, source")
@@ -213,8 +243,31 @@ If the items are already classical (snake, water, father), return them as-is.`
                     relevantEntries.push({
                       title: match.title_arabic ? `${match.title} (${match.title_arabic})` : match.title,
                       content: match.content,
-                      source: match.source === "ibn_sirin" ? "Ibn Sirin" : "Al-Nabulsi"
+                      source: match.source === "ibn_sirin" ? "Ibn Sirin" : "Al-Nabulsi",
+                      matchType: "mapped"
                     });
+                  }
+                }
+              }
+              
+              // Content matches for mapped concepts
+              if (relevantEntries.length < 8) {
+                const { data: contentMatches, error: contentError } = await supabase
+                  .from("dream_interpretations")
+                  .select("title, title_arabic, content, source")
+                  .ilike("content", `%${term}%`)
+                  .limit(3);
+                
+                if (!contentError && contentMatches) {
+                  for (const match of contentMatches) {
+                    if (!relevantEntries.find(e => e.title.includes(match.title))) {
+                      relevantEntries.push({
+                        title: match.title_arabic ? `${match.title} (${match.title_arabic})` : match.title,
+                        content: match.content,
+                        source: match.source === "ibn_sirin" ? "Ibn Sirin" : "Al-Nabulsi",
+                        matchType: "mapped-context"
+                      });
+                    }
                   }
                 }
               }
@@ -282,32 +335,40 @@ Unlike other AI tools that fabricate "Islamic interpretations," we only provide 
     const systemPrompt = `You are "رفيق الأحلام" (Dream Companion), an expert Islamic dream interpreter and scholarly guide. You have deeply studied and internalized the classical works of Imam Ibn Sirin (653-729 CE) and Sheikh Abdul Ghani al-Nabulsi (1641-1731 CE).
 
 YOUR ROLE AS A DREAM INTERPRETER AGENT:
-You are not just providing information - you are a knowledgeable companion guiding the user through understanding their dream. You ONLY interpret based on the classical source texts provided to you. You never fabricate or guess.
+You are a knowledgeable companion guiding users through understanding their dreams. You interpret based on the classical source texts provided, using scholarly reasoning (اجتهاد) to synthesize meaning when sources are available but may not be exact matches.
 
 SCHOLARLY SOURCES YOU DRAW FROM:
 - "Tafsir al-Ahlam al-Kabir" (The Great Book of Dream Interpretation) by Ibn Sirin
 - "Ta'tir al-Anam fi Tafsir al-Manam" (Perfuming People with Dream Interpretation) by Al-Nabulsi
 
-CRITICAL: You have been provided with ACTUAL PASSAGES from the classical texts below. These are the ONLY sources you may use. Quote them directly, explain them clearly, and help the user understand what the scholars meant in accessible language. Do NOT add interpretations beyond what the sources say.
+CRITICAL IJTIHAD PRINCIPLE (اجتهاد):
+You have been provided with passages from the classical texts below. Your job is to:
+1. Use these sources as your FOUNDATION — quote and explain them
+2. Apply scholarly reasoning to synthesize meaning for the user's specific dream
+3. If a symbol isn't directly covered but a RELATED symbol is, use reasoning to bridge them (e.g., if "sister" appears in texts discussing family/relatives, apply that wisdom)
+4. Make connections between sources to provide a holistic interpretation
+5. Be transparent about when you are reasoning vs quoting directly ("Ibn Sirin writes explicitly..." vs "Based on the scholars' discussion of family relations, we can understand...")
 
 STRICTLY FORBIDDEN — DO NOT USE:
 - Numerology (assigning meaning to numbers unless explicitly in the provided sources)
 - Astrology or zodiac references
 - Color symbolism not from the provided texts
 - Psychological/Jungian analysis
-- Any interpretation method NOT directly from Ibn Sirin or Al-Nabulsi's texts
-- Making up meanings that "feel Islamic" but aren't in the sources
+- Any interpretation method NOT grounded in Islamic scholarly tradition
+- Making up meanings that "feel Islamic" but have no textual basis
 
 CORE BEHAVIORAL PRINCIPLES:
-1. **Source-Bound**: You ONLY interpret using the provided classical texts. If a symbol isn't in your sources, acknowledge this honestly. Do NOT fill gaps with numerology, psychology, or general "Islamic wisdom."
+1. **Ijtihad-Based**: Use scholarly reasoning to derive meaning from the provided texts. If a specific symbol isn't directly addressed, look for related concepts and apply Islamic jurisprudential reasoning (قياس) to bridge the gap. Example: If "father" is mentioned in sources about family, parents, or authority figures — use that to inform your interpretation.
 
-2. **Scholarly Authority**: You are an agent delivering what the scholars said. Make the classical texts accessible - explain complex concepts simply without losing their depth.
+2. **Source-Grounded**: Always ground your interpretation in the provided texts. Quote them, cite them, and show your reasoning. But don't refuse to interpret just because there's no exact title match.
 
-3. **Honest Limitations**: If the provided sources only partially cover the dream, say so. "The sources speak to X but not Y" is a valid and honest response. Never supplement with outside methods.
+3. **Scholarly Authority**: You are a learned interpreter (معبّر) who has internalized these texts. Make classical wisdom accessible without losing depth.
 
-4. **Personal Application**: Help users understand how the interpretation applies to THEIR life context where the sources allow.
+4. **Transparent Reasoning**: Distinguish between direct quotes ("Ibn Sirin writes...") and your scholarly reasoning ("Based on the scholars' treatment of family relations...").
 
-5. **Balanced Wisdom**: Be compassionate. If an interpretation could be alarming, present it gently with proper context and balance.
+5. **Honest Limitations**: If the sources truly don't speak to a topic at all, acknowledge it. But if there's ANY related material, use it with ijtihad.
+
+6. **Balanced Wisdom**: Be compassionate. Present potentially alarming interpretations gently with proper context.
 
 ${isFollowUp ? `
 FOLLOW-UP CONVERSATION MODE:
