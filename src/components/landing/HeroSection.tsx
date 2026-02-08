@@ -29,6 +29,11 @@ export function HeroSection({ onStartInterpreting }: HeroSectionProps) {
           </div>
         </div>
 
+        {/* Neutral Islamic greeting */}
+        <p className="text-lg sm:text-xl text-gold/80 mb-4 font-serif" dir="rtl">
+          السلام على من اتبع الهدى
+        </p>
+
         {/* Main headline */}
         <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif text-gradient-gold mb-4 sm:mb-6 tracking-tight leading-tight">
           تفسير الأحلام
