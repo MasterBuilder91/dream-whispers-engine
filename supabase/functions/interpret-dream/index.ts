@@ -149,6 +149,85 @@ Do NOT include:
       console.log(`Found ${relevantEntries.length} relevant interpretations for symbols`);
     }
 
+    // Step 3: If no direct matches, try conceptual mapping (modern → classical)
+    if (relevantEntries.length === 0 && searchTerms.length > 0) {
+      console.log("No direct matches found. Attempting conceptual mapping...");
+      
+      const conceptMappingResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "google/gemini-2.5-flash-lite",
+          messages: [
+            { 
+              role: "system", 
+              content: `You are a scholar bridging modern concepts to classical Islamic dream interpretation symbols.
+
+Given modern items or concepts that wouldn't exist in 7th-12th century texts, map them to their closest classical equivalents based on:
+- Function (what it does)
+- Symbolic meaning (what it represents)
+- Emotional association (how it makes people feel)
+
+Examples:
+- "iPhone" → ["رسالة", "message", "letter", "كتاب", "book", "mirror", "مرآة"] (communication, self-reflection)
+- "car" → ["horse", "حصان", "camel", "جمل", "riding", "travel", "سفر"] (transportation, journey)
+- "airplane" → ["bird", "طائر", "flying", "طيران", "wind", "ريح"] (flight, elevation)
+- "computer" → ["book", "كتاب", "knowledge", "علم", "writing", "كتابة"] (information, learning)
+- "money/salary" → ["gold", "ذهب", "silver", "فضة", "treasure", "كنز"] (wealth, provision)
+
+Return ONLY a JSON array of 4-8 classical symbol keywords in both English and Arabic.
+If the items are already classical (snake, water, father), return them as-is.` 
+            },
+            { role: "user", content: `Map these modern concepts to classical dream symbols: ${searchTerms.join(", ")}` }
+          ],
+          temperature: 0.2,
+        }),
+      });
+
+      if (conceptMappingResponse.ok) {
+        const conceptData = await conceptMappingResponse.json();
+        const conceptText = conceptData.choices?.[0]?.message?.content || "";
+        
+        const jsonMatch = conceptText.match(/\[[\s\S]*\]/);
+        if (jsonMatch) {
+          try {
+            const classicalSymbols = JSON.parse(jsonMatch[0]);
+            console.log("Conceptual mapping result:", classicalSymbols);
+            
+            // Search again with classical equivalents
+            for (const term of classicalSymbols.slice(0, 8)) {
+              if (relevantEntries.length >= 8) break;
+              
+              const { data: titleMatches, error: titleError } = await supabase
+                .from("dream_interpretations")
+                .select("title, title_arabic, content, source")
+                .or(`title.ilike.%${term}%,title_arabic.ilike.%${term}%`)
+                .limit(3);
+              
+              if (!titleError && titleMatches) {
+                for (const match of titleMatches) {
+                  if (!relevantEntries.find(e => e.title.includes(match.title))) {
+                    relevantEntries.push({
+                      title: match.title_arabic ? `${match.title} (${match.title_arabic})` : match.title,
+                      content: match.content,
+                      source: match.source === "ibn_sirin" ? "Ibn Sirin" : "Al-Nabulsi"
+                    });
+                  }
+                }
+              }
+            }
+            
+            console.log(`After conceptual mapping: found ${relevantEntries.length} entries`);
+          } catch {
+            console.error("Failed to parse concept mapping JSON:", conceptText);
+          }
+        }
+      }
+    }
+
     // Format relevant entries for AI context
     const formattedEntries = relevantEntries.length > 0
       ? relevantEntries
@@ -158,11 +237,11 @@ Do NOT include:
 
     const hasBookContext = relevantEntries.length > 0;
 
-    // If no sources found, return honest "no match" response - don't fabricate
+    // If STILL no sources found after conceptual mapping, return honest "no match" response
     if (!hasBookContext && !isFollowUp) {
       const noSourceResponse = `## لم نجد تفسيراً في المصادر الكلاسيكية
 
-نعتذر، لم نتمكن من العثور على تفسير مباشر لرموز حلمك في كتب ابن سيرين أو النابلسي.
+نعتذر، لم نتمكن من العثور على تفسير مباشر أو رمزي لعناصر حلمك في كتب ابن سيرين أو النابلسي.
 
 **الرموز التي بحثنا عنها:** ${searchTerms.join("، ")}
 
@@ -172,25 +251,24 @@ Do NOT include:
 
 ## No Classical Sources Found
 
-We couldn't find a direct interpretation for your dream symbols in the works of Ibn Sirin or Al-Nabulsi.
+We searched for both direct matches and conceptual equivalents, but couldn't find relevant interpretations in Ibn Sirin or Al-Nabulsi's works.
 
-**Symbols we searched for:** ${searchTerms.join(", ")}
+**Symbols searched:** ${searchTerms.join(", ")}
 
-This doesn't mean your dream is meaningless — it simply means these specific symbols aren't covered in the classical texts we reference.
+This doesn't mean your dream is meaningless — it simply means these specific symbols (and their classical equivalents) aren't covered in our reference texts.
 
 ### Why we won't guess:
 
 > **"من قال لا أعلم فقد أفتى"**
 > *"Whoever says 'I don't know' has given a ruling."* — Islamic scholarly principle
 
-Unlike other AI tools that fabricate "Islamic interpretations," we only provide what the scholars actually wrote. Making up interpretations would be a disservice to you and to the sacred science of dream interpretation.
+Unlike other AI tools that fabricate "Islamic interpretations," we only provide what the scholars actually wrote.
 
 ### What you can try:
-- **Rephrase your dream** focusing on different symbols (water, animals, people, actions)
-- **Use Arabic terms** if you know them — our database includes Arabic titles
-- **Focus on the main symbol** — describe the most prominent element`;
+- **Focus on emotions or actions** in your dream (fear, running, falling)
+- **Describe natural elements** (water, fire, animals, people)
+- **Use simpler terms** — the classical texts use foundational symbols`;
 
-      // Return as a simple text response, not streaming
       return new Response(
         JSON.stringify({ 
           interpretation: noSourceResponse,
