@@ -67,9 +67,7 @@ export function useDreamChat(): UseDreamChatReturn {
   const [isLoading, setIsLoading] = useState(false);
   const [messageCount, setMessageCount] = useState(0);
 
-  const isPremium = subscription.subscribed;
-
-  // Load message count on mount
+  const isPremium = subscription.subscribed || subscription.isAdmin;
   useEffect(() => {
     const loadMessageCount = async () => {
       if (user) {
