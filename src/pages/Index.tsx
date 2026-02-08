@@ -1,31 +1,20 @@
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { DifferentiatorSection } from "@/components/landing/DifferentiatorSection";
 import { SourcesShowcase } from "@/components/landing/SourcesShowcase";
 import { FAQSection } from "@/components/landing/FAQSection";
-import { DreamInput } from "@/components/DreamInput";
-import { InterpretationResult } from "@/components/InterpretationResult";
-import { SignupPrompt } from "@/components/SignupPrompt";
-import { useInterpretDream } from "@/hooks/useInterpretDream";
+import { DreamChat } from "@/components/DreamChat";
 import { useAuth } from "@/contexts/AuthContext";
 import { Moon, BookOpen, User, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Index = () => {
-  const { interpretation, isLoading, sources, interpretDream } = useInterpretDream();
   const { user, subscription } = useAuth();
   const interpretSectionRef = useRef<HTMLDivElement>(null);
-  const [hasInteracted, setHasInteracted] = useState(false);
 
   const scrollToInterpret = () => {
-    setHasInteracted(true);
     interpretSectionRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  const handleInterpret = (dream: string) => {
-    setHasInteracted(true);
-    interpretDream(dream);
   };
 
   return (
@@ -80,7 +69,7 @@ const Index = () => {
         {/* Sources Showcase */}
         <SourcesShowcase />
 
-        {/* Dream Interpretation Section */}
+        {/* Dream Chat Section */}
         <section ref={interpretSectionRef} className="py-12 sm:py-20" id="interpret">
           <div className="container mx-auto px-4">
             <div className="text-center mb-10">
@@ -88,32 +77,11 @@ const Index = () => {
                 Interpret Your Dream
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Enter your dream below and receive authentic interpretations from classical sources
+                Have a conversation about your dream. Ask follow-up questions to explore deeper meanings.
               </p>
             </div>
 
-            <DreamInput 
-              onSubmit={handleInterpret} 
-              isLoading={isLoading}
-            />
-            
-            <InterpretationResult 
-              interpretation={interpretation}
-              isStreaming={isLoading}
-              sources={sources}
-            />
-
-            {/* Show signup benefits after interpretation for non-authenticated users */}
-            {!user && interpretation && !isLoading && (
-              <div className="mt-12 max-w-lg mx-auto">
-                <div className="text-center mb-6">
-                  <p className="text-sm text-muted-foreground">
-                    Want to save this interpretation and track patterns over time?
-                  </p>
-                </div>
-                <SignupPrompt variant="upgrade-benefits" />
-              </div>
-            )}
+            <DreamChat />
           </div>
         </section>
 
