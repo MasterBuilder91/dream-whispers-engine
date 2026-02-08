@@ -41,7 +41,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen starfield geometric-pattern">
-      <div className="relative z-10">
+      <div className="relative" style={{ zIndex: 10 }}>
         {/* Navigation */}
         <nav className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
