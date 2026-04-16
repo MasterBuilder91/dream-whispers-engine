@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 const Index = () => {
   const { user, subscription } = useAuth();
   const interpretSectionRef = useRef<HTMLDivElement>(null);
-  const { interpretation, isLoading, sources, interpretDream, reset } = useInterpretDream();
+  const { interpretation, isLoading, sources, infographicUrl, isGeneratingInfographic, interpretDream, reset } = useInterpretDream();
 
   const scrollToInterpret = () => {
     interpretSectionRef.current?.scrollIntoView({ behavior: "smooth" });
