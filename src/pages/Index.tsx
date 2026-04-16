@@ -6,6 +6,7 @@ import { SourcesShowcase } from "@/components/landing/SourcesShowcase";
 import { FAQSection } from "@/components/landing/FAQSection";
 import { DreamInput } from "@/components/DreamInput";
 import { InterpretationResult } from "@/components/InterpretationResult";
+import { DreamInfographic } from "@/components/DreamInfographic";
 import { useInterpretDream } from "@/hooks/useInterpretDream";
 import { useAuth } from "@/contexts/AuthContext";
 import { Moon, BookOpen, User, Crown, RefreshCw } from "lucide-react";
