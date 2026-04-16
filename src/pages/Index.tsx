@@ -101,6 +101,11 @@ const Index = () => {
               sources={sources}
             />
 
+            <DreamInfographic 
+              imageUrl={infographicUrl}
+              isGenerating={isGeneratingInfographic}
+            />
+
             {/* New Dream button after interpretation */}
             {interpretation && !isLoading && (
               <div className="w-full max-w-3xl mx-auto mt-6 flex justify-center">
