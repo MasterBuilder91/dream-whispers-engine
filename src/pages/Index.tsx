@@ -6,6 +6,7 @@ import { SourcesShowcase } from "@/components/landing/SourcesShowcase";
 import { FAQSection } from "@/components/landing/FAQSection";
 import { DreamInput } from "@/components/DreamInput";
 import { InterpretationResult } from "@/components/InterpretationResult";
+import { DreamInfographic } from "@/components/DreamInfographic";
 import { useInterpretDream } from "@/hooks/useInterpretDream";
 import { useAuth } from "@/contexts/AuthContext";
 import { Moon, BookOpen, User, Crown, RefreshCw } from "lucide-react";
@@ -14,7 +15,7 @@ import { Button } from "@/components/ui/button";
 const Index = () => {
   const { user, subscription } = useAuth();
   const interpretSectionRef = useRef<HTMLDivElement>(null);
-  const { interpretation, isLoading, sources, interpretDream, reset } = useInterpretDream();
+  const { interpretation, isLoading, sources, infographicUrl, isGeneratingInfographic, interpretDream, reset } = useInterpretDream();
 
   const scrollToInterpret = () => {
     interpretSectionRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -98,6 +99,11 @@ const Index = () => {
               interpretation={interpretation} 
               isStreaming={isLoading}
               sources={sources}
+            />
+
+            <DreamInfographic 
+              imageUrl={infographicUrl}
+              isGenerating={isGeneratingInfographic}
             />
 
             {/* New Dream button after interpretation */}

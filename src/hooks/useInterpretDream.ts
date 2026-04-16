@@ -2,6 +2,7 @@ import { useState, useCallback } from "react";
 import { toast } from "@/hooks/use-toast";
 
 const INTERPRET_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/interpret-dream`;
+const INFOGRAPHIC_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-dream-infographic`;
 
 export interface SourceCitation {
   title: string;
@@ -13,6 +14,8 @@ interface UseInterpretDreamReturn {
   interpretation: string;
   isLoading: boolean;
   sources: SourceCitation[];
+  infographicUrl: string | null;
+  isGeneratingInfographic: boolean;
   interpretDream: (dreamDescription: string) => Promise<void>;
   reset: () => void;
 }
@@ -21,16 +24,54 @@ export function useInterpretDream(): UseInterpretDreamReturn {
   const [interpretation, setInterpretation] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [sources, setSources] = useState<SourceCitation[]>([]);
+  const [infographicUrl, setInfographicUrl] = useState<string | null>(null);
+  const [isGeneratingInfographic, setIsGeneratingInfographic] = useState(false);
 
   const reset = useCallback(() => {
     setInterpretation("");
     setSources([]);
+    setInfographicUrl(null);
+    setIsGeneratingInfographic(false);
+  }, []);
+
+  const generateInfographic = useCallback(async (dreamDescription: string, extractedSymbols: string[]) => {
+    setIsGeneratingInfographic(true);
+    try {
+      const response = await fetch(INFOGRAPHIC_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({ 
+          dreamDescription, 
+          symbols: extractedSymbols,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.imageUrl) {
+          setInfographicUrl(data.imageUrl);
+        }
+      } else {
+        console.warn("Infographic generation failed:", response.status);
+      }
+    } catch (error) {
+      console.warn("Infographic generation error:", error);
+    } finally {
+      setIsGeneratingInfographic(false);
+    }
   }, []);
 
   const interpretDream = useCallback(async (dreamDescription: string) => {
     setIsLoading(true);
     setInterpretation("");
     setSources([]);
+    setInfographicUrl(null);
+    setIsGeneratingInfographic(false);
+
+    let collectedSources: SourceCitation[] = [];
 
     try {
       const response = await fetch(INTERPRET_URL, {
@@ -105,6 +146,7 @@ export function useInterpretDream(): UseInterpretDreamReturn {
             
             // Check if this is our sources metadata
             if (parsed.type === "sources" && parsed.sources) {
+              collectedSources = parsed.sources;
               setSources(parsed.sources);
               continue;
             }
@@ -142,6 +184,11 @@ export function useInterpretDream(): UseInterpretDreamReturn {
           }
         }
       }
+
+      // After interpretation completes, generate infographic
+      const symbolsFromSources = collectedSources.map(s => s.title.split("(")[0].trim());
+      generateInfographic(dreamDescription, symbolsFromSources);
+
     } catch (error) {
       console.error("Interpretation error:", error);
       toast({
@@ -152,12 +199,14 @@ export function useInterpretDream(): UseInterpretDreamReturn {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [generateInfographic]);
 
   return {
     interpretation,
     isLoading,
     sources,
+    infographicUrl,
+    isGeneratingInfographic,
     interpretDream,
     reset,
   };
