@@ -104,6 +104,54 @@ export type Database = {
         }
         Relationships: []
       }
+      symbol_interpretations: {
+        Row: {
+          category: string | null
+          created_at: string
+          id: string
+          interpretation_ar: string | null
+          interpretation_en: string | null
+          language: string
+          scholar: string | null
+          source_name: string
+          source_url: string
+          symbol_ar: string | null
+          symbol_en: string | null
+          symbol_slug: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          id?: string
+          interpretation_ar?: string | null
+          interpretation_en?: string | null
+          language?: string
+          scholar?: string | null
+          source_name: string
+          source_url: string
+          symbol_ar?: string | null
+          symbol_en?: string | null
+          symbol_slug: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          id?: string
+          interpretation_ar?: string | null
+          interpretation_en?: string | null
+          language?: string
+          scholar?: string | null
+          source_name?: string
+          source_url?: string
+          symbol_ar?: string | null
+          symbol_en?: string | null
+          symbol_slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_dreams: {
         Row: {
           created_at: string
