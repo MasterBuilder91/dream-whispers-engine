@@ -9,6 +9,7 @@ import Auth from "./pages/Auth";
 import Journal from "./pages/Journal";
 import Install from "./pages/Install";
 import ImportData from "./pages/ImportData";
+import AdminIngest from "./pages/AdminIngest";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,6 +28,7 @@ function App() {
               <Route path="/journal" element={<Journal />} />
               <Route path="/install" element={<Install />} />
               <Route path="/import" element={<ImportData />} />
+              <Route path="/admin/ingest" element={<AdminIngest />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
