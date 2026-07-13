@@ -34,8 +34,9 @@ const Index = () => {
             <div className="w-8 h-8 rounded-full bg-gradient-gold flex items-center justify-center">
               <Moon className="w-4 h-4 text-primary-foreground" />
             </div>
-            <span className="font-serif text-lg text-gold">تفسير الأحلام</span>
+            <span className="font-serif text-lg text-gold tracking-wide">BinSirin</span>
           </div>
+
           <div className="flex items-center gap-4 sm:gap-6 text-sm">
             <div className="hidden sm:flex items-center gap-6">
               <a href="#why-different" className="text-muted-foreground hover:text-gold transition-colors">
