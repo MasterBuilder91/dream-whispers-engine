@@ -180,7 +180,7 @@ export default function Auth() {
             </div>
           </div>
           <h1 className="text-2xl sm:text-3xl font-serif text-gradient-gold mb-2">
-            Dream Companion
+            BinSirin
           </h1>
           <p className="text-sm text-muted-foreground">رفيق الأحلام</p>
         </div>
@@ -334,7 +334,7 @@ export default function Auth() {
         {/* Back to home */}
         <div className="text-center mt-6">
           <a href="/" className="text-sm text-muted-foreground hover:text-gold transition-colors">
-            ← Back to Dream Companion
+            ← Back to BinSirin
           </a>
         </div>
       </div>

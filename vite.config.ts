@@ -20,8 +20,8 @@ export default defineConfig(({ mode }) => ({
       registerType: "autoUpdate",
       includeAssets: ["favicon.ico", "robots.txt"],
       manifest: {
-        name: "Dream Companion - رفيق الأحلام",
-        short_name: "Dream Companion",
+        name: "BinSirin - رفيق الأحلام",
+        short_name: "BinSirin",
         description: "Authentic dream interpretation from classical scholars Ibn Sirin & Al-Nabulsi",
         theme_color: "#0a0a12",
         background_color: "#0a0a12",

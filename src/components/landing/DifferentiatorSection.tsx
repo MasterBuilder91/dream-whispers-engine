@@ -63,7 +63,7 @@ export function DifferentiatorSection() {
                 <CheckCircle className="w-6 h-6 text-primary-foreground" />
               </div>
               <div>
-                <h3 className="text-xl sm:text-2xl font-serif text-gold">Dream Whispers Engine</h3>
+                <h3 className="text-xl sm:text-2xl font-serif text-gold">BinSirin</h3>
                 <p className="text-sm text-muted-foreground">Verifiable. Auditable. Authentic.</p>
               </div>
             </div>

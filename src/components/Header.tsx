@@ -23,13 +23,14 @@ export function Header() {
           </div>
         </div>
 
-        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif text-gradient-gold mb-2 sm:mb-4 tracking-tight">
-          تفسير الأحلام
+        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif text-gradient-gold mb-2 sm:mb-3 tracking-tight">
+          BinSirin
         </h1>
-        
-        <p className="text-base sm:text-lg md:text-xl text-foreground/80 mb-1 sm:mb-2 font-serif">
-          Dream Interpretation
+
+        <p className="text-lg sm:text-xl md:text-2xl text-foreground/80 mb-1 sm:mb-2 font-serif arabic-text" dir="rtl">
+          تفسير الأحلام
         </p>
+
 
         <div className="flex items-center justify-center gap-2 text-xs sm:text-sm text-muted-foreground">
           <BookOpen className="w-3 h-3 sm:w-4 sm:h-4" />

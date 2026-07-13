@@ -7,7 +7,7 @@ export const SUBSCRIPTION_TIERS = {
   premium: {
     product_id: "prod_TvoaGI4xO4Akc6",
     price_id: "price_1Sxwx8GAtYKo4nymdRKr9Vdy",
-    name: "Dream Companion Premium",
+    name: "BinSirin Premium",
     price: "$4.99/month",
   },
 } as const;
