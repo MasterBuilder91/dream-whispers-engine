@@ -142,7 +142,7 @@ export default function Journal() {
               <div className="w-8 h-8 rounded-full bg-gradient-gold flex items-center justify-center">
                 <Moon className="w-4 h-4 text-primary-foreground" />
               </div>
-              <span className="font-serif text-lg text-gold">Dream Companion</span>
+              <span className="font-serif text-lg text-gold">BinSirin</span>
             </a>
 
             <div className="flex items-center gap-3">

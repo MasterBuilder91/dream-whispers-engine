@@ -55,7 +55,7 @@ serve(async (req) => {
       customer_email: customerId ? undefined : user.email,
       line_items: [
         {
-          price: "price_1Sxwx8GAtYKo4nymdRKr9Vdy", // Dream Companion Premium
+          price: "price_1Sxwx8GAtYKo4nymdRKr9Vdy", // BinSirin Premium
           quantity: 1,
         },
       ],

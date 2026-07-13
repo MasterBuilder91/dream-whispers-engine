@@ -68,7 +68,7 @@ export default function Install() {
               </div>
             </div>
           </div>
-          <h1 className="text-3xl font-serif text-gradient-gold mb-2">Dream Companion</h1>
+          <h1 className="text-3xl font-serif text-gradient-gold mb-2">BinSirin</h1>
           <p className="text-muted-foreground">رفيق الأحلام</p>
         </div>
 
@@ -81,7 +81,7 @@ export default function Install() {
               </div>
               <h2 className="text-xl font-semibold mb-2">Already Installed!</h2>
               <p className="text-muted-foreground mb-6">
-                Dream Companion is installed on your device. Open it from your home screen.
+                BinSirin is installed on your device. Open it from your home screen.
               </p>
               <a href="/">
                 <Button className="bg-gradient-gold hover:opacity-90 text-primary-foreground">
@@ -94,7 +94,7 @@ export default function Install() {
               <Smartphone className="w-12 h-12 text-gold mx-auto mb-4" />
               <h2 className="text-xl font-semibold mb-2">Install on iPhone</h2>
               <p className="text-muted-foreground mb-6">
-                Add Dream Companion to your home screen for the best experience:
+                Add BinSirin to your home screen for the best experience:
               </p>
               
               <div className="text-left space-y-4 mb-6">
@@ -132,7 +132,7 @@ export default function Install() {
           ) : deferredPrompt ? (
             <div className="text-center">
               <Download className="w-12 h-12 text-gold mx-auto mb-4" />
-              <h2 className="text-xl font-semibold mb-2">Install Dream Companion</h2>
+              <h2 className="text-xl font-semibold mb-2">Install BinSirin</h2>
               <p className="text-muted-foreground mb-6">
                 Add to your home screen for quick access, offline support, and a native app experience.
               </p>
@@ -149,7 +149,7 @@ export default function Install() {
               <Smartphone className="w-12 h-12 text-gold mx-auto mb-4" />
               <h2 className="text-xl font-semibold mb-2">Install on Android</h2>
               <p className="text-muted-foreground mb-6">
-                Add Dream Companion to your home screen:
+                Add BinSirin to your home screen:
               </p>
               
               <div className="text-left space-y-4 mb-6">
