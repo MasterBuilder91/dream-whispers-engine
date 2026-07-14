@@ -34,7 +34,7 @@ export function useInterpretDream(): UseInterpretDreamReturn {
     setIsGeneratingInfographic(false);
   }, []);
 
-  const generateInfographic = useCallback(async (dreamDescription: string, extractedSymbols: string[]) => {
+  const generateInfographic = useCallback(async (dreamDescription: string, interpretationText: string) => {
     setIsGeneratingInfographic(true);
     try {
       const response = await fetch(INFOGRAPHIC_URL, {
@@ -43,9 +43,9 @@ export function useInterpretDream(): UseInterpretDreamReturn {
           "Content-Type": "application/json",
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
-        body: JSON.stringify({ 
-          dreamDescription, 
-          symbols: extractedSymbols,
+        body: JSON.stringify({
+          dreamDescription,
+          interpretation: interpretationText,
         }),
       });
 
