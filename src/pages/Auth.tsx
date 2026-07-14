@@ -29,40 +29,27 @@ export default function Auth() {
 
   // Process OAuth callback on mount
   useEffect(() => {
-    const processOAuthCallback = async () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const hashParams = new URLSearchParams(window.location.hash.substring(1));
-      const hasOAuthParams = urlParams.has('code') || urlParams.has('error') || 
-                             hashParams.has('access_token') || hashParams.has('error');
-      
-      if (hasOAuthParams && !processingOAuth) {
-        setProcessingOAuth(true);
-        
-        // Clean up URL params first
-        window.history.replaceState({}, document.title, window.location.pathname);
-        
-        try {
-          // Call signInWithOAuth to process the callback tokens
-          const result = await lovable.auth.signInWithOAuth("google", {
-            redirect_uri: `${window.location.origin}/auth`,
-          });
-          
-          // Only show error if there's an actual error and we didn't just redirect
-          if (result.error && !result.redirected) {
-            console.error("OAuth callback error:", result.error);
-            toast.error("Failed to complete sign in. Please try again.");
-            setProcessingOAuth(false);
-          }
-          // If successful, the auth state change listener will handle redirect
-        } catch (err) {
-          console.error("OAuth callback error:", err);
-          toast.error("Failed to complete sign in. Please try again.");
-          setProcessingOAuth(false);
-        }
-      }
-    };
+    const urlParams = new URLSearchParams(window.location.search);
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const hasOAuthParams = urlParams.has('code') || urlParams.has('error') ||
+                           hashParams.has('access_token') || hashParams.has('error');
 
-    processOAuthCallback();
+    if (!hasOAuthParams) return;
+
+    const errorDesc = urlParams.get('error_description') || hashParams.get('error_description');
+    if (urlParams.has('error') || hashParams.has('error')) {
+      console.error("OAuth provider error:", errorDesc);
+      toast.error(errorDesc || "Sign in was cancelled or failed.");
+      window.history.replaceState({}, document.title, window.location.pathname);
+      return;
+    }
+
+    // Supabase JS auto-processes the code/hash via detectSessionInUrl.
+    // Just show a spinner until the auth state settles.
+    setProcessingOAuth(true);
+    window.history.replaceState({}, document.title, window.location.pathname);
+    const timeout = setTimeout(() => setProcessingOAuth(false), 4000);
+    return () => clearTimeout(timeout);
   }, []);
 
   // Redirect when user is authenticated
