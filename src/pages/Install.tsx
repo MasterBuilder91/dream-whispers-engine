@@ -194,7 +194,8 @@ export default function Install() {
             ← Continue in browser
           </a>
         </div>
-      </div>
+      </main>
     </div>
+
   );
 }
