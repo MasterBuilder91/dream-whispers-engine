@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { resolveAccess } from "../_shared/limits.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -153,6 +154,18 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({ error: "Dream description is required" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+    // Infographic is a Premium feature (or admin). Free users see an upgrade prompt.
+    const access = await resolveAccess(req);
+    if (!access.isAdmin && !access.isPremium) {
+      return new Response(
+        JSON.stringify({
+          error: "premium_required",
+          message: "The dream infographic is a Premium feature.",
+        }),
+        { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
 
