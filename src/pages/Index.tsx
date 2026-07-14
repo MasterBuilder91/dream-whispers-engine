@@ -68,6 +68,16 @@ const Index = () => {
 
   return (
     <div className="min-h-screen starfield geometric-pattern">
+      <Helmet>
+        <title>BinSirin | Authentic Islamic Dream Interpretation</title>
+        <meta name="description" content="Describe your dream and receive an authentic interpretation grounded in Ibn Sirin and Al-Nabulsi's classical texts — every response cited." />
+        <link rel="canonical" href="https://binsirin.com/" />
+        <meta property="og:title" content="BinSirin | Authentic Islamic Dream Interpretation" />
+        <meta property="og:description" content="Authentic Islamic dream interpretation grounded in Ibn Sirin & Al-Nabulsi. Every response cited to the classical text." />
+        <meta property="og:url" content="https://binsirin.com/" />
+        <script type="application/ld+json">{JSON.stringify(organizationJsonLd)}</script>
+        <script type="application/ld+json">{JSON.stringify(faqJsonLd)}</script>
+      </Helmet>
       <div className="relative z-10">
         {/* Navigation */}
         <nav className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -91,13 +101,15 @@ const Index = () => {
           </div>
         </nav>
 
+        <main>
         {/* Dream Input Section - the tool is the first thing you see */}
         <section ref={interpretSectionRef} className="pt-8 pb-12 sm:pt-12 sm:pb-20" id="interpret">
           <div className="container mx-auto px-4">
             <div className="text-center mb-8 sm:mb-10">
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif text-gradient-gold mb-3 sm:mb-4">
-                BinSirin
+                BinSirin — Authentic Islamic Dream Interpretation
               </h1>
+
               <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
                 Describe your dream and receive authentic interpretations from classical Islamic scholars.
               </p>
