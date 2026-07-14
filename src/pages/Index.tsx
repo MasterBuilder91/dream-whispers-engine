@@ -98,51 +98,6 @@ const Index = () => {
         <SourcesShowcase />
 
 
-        {/* Dream Input Section */}
-        <section ref={interpretSectionRef} className="py-12 sm:py-20" id="interpret">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-10">
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif text-gradient-gold mb-4">
-                Interpret Your Dream
-              </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Describe your dream and receive authentic interpretations from classical Islamic scholars.
-              </p>
-            </div>
-
-            <DreamInput 
-              onSubmit={handleDreamSubmit} 
-              isLoading={isLoading}
-              disabled={false}
-            />
-
-            <InterpretationResult 
-              interpretation={interpretation} 
-              isStreaming={isLoading}
-              sources={sources}
-            />
-
-            <DreamInfographic 
-              imageUrl={infographicUrl}
-              isGenerating={isGeneratingInfographic}
-            />
-
-            {/* New Dream button after interpretation */}
-            {interpretation && !isLoading && (
-              <div className="w-full max-w-3xl mx-auto mt-6 flex justify-center">
-                <Button
-                  variant="outline"
-                  onClick={reset}
-                  className="border-gold/30 hover:bg-gold/10"
-                >
-                  <RefreshCw className="w-4 h-4 mr-2" />
-                  New Dream
-                </Button>
-              </div>
-            )}
-          </div>
-        </section>
-
         {/* FAQ Section */}
         <FAQSection />
 
