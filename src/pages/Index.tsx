@@ -37,7 +37,7 @@ const faqJsonLd = {
       name: "Is BinSirin free to use?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Yes. Dream interpretation is free with no limits. A free account lets you save dreams to a journal. Premium ($4.99/mo) adds unlimited storage, pattern analysis, and mood tracking.",
+        text: "The free plan gives you 3 dream interpretations per month, the full A–Z symbol dictionary, and a small journal. Premium ($4.99/mo) unlocks unlimited interpretations, shareable dream infographics, full journaling, and monthly trend analysis.",
       },
     },
   ],

@@ -25,7 +25,7 @@ export function FAQSection() {
     },
     {
       question: "Is this service free?",
-      answer: "Yes! Dream interpretation is completely free with no limits. Create a free account to save your dreams to a journal and track recurring symbols. Premium subscribers ($4.99/mo) get unlimited storage, pattern analysis, and mood trend insights."
+      answer: "The free plan gives you 3 dream interpretations per month, unlimited access to the A–Z symbol dictionary, and a small journal — no card required. Premium ($4.99/mo) unlocks unlimited interpretations, a shareable dream infographic for every dream, full journaling, and monthly trend analysis."
     },
     {
       question: "What languages are supported?",
