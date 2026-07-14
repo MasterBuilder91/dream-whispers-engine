@@ -185,9 +185,10 @@ export function useInterpretDream(): UseInterpretDreamReturn {
         }
       }
 
-      // After interpretation completes, generate infographic
-      const symbolsFromSources = collectedSources.map(s => s.title.split("(")[0].trim());
-      generateInfographic(dreamDescription, symbolsFromSources);
+      // After interpretation completes, generate infographic using the full interpretation text
+      // (the edge function extracts real visual symbols from it; we no longer pass citation titles).
+      void collectedSources;
+      generateInfographic(dreamDescription, interpretation);
 
     } catch (error) {
       console.error("Interpretation error:", error);
