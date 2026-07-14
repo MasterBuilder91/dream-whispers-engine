@@ -154,7 +154,7 @@ const Index = () => {
             <div className="mt-8 pt-6 border-t border-border text-center">
               <p className="text-xs text-muted-foreground/50">
                 © {new Date().getFullYear()} BinSirin. 
-                AI is a tool, not the interpreter. All interpretations sourced from classical scholars.
+                All interpretations grounded in and cited from classical scholarly texts.
               </p>
             </div>
           </div>

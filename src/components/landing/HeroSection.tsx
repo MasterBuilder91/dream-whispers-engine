@@ -53,7 +53,7 @@ export function HeroSection({ onStartInterpreting }: HeroSectionProps) {
           </p>
           <p className="mt-3 text-base sm:text-lg text-foreground/70 max-w-2xl mx-auto">
             Direct access to <strong className="text-gold">4,000+ primary source interpretations</strong> from Ibn Sirin & Al-Nabulsi. 
-            Not another "Islamic AI" that makes things up.
+            Every response cited. Every source verifiable.
           </p>
         </div>
 
@@ -66,7 +66,7 @@ export function HeroSection({ onStartInterpreting }: HeroSectionProps) {
             <span className="text-gold">✓</span> Cited Interpretations
           </div>
           <div className="px-4 py-2 rounded-full bg-secondary/50 border border-gold/20 text-sm sm:text-base">
-            <span className="text-gold">✓</span> Scholars Interpret, Not AI
+            <span className="text-gold">✓</span> Grounded in Classical Texts
           </div>
         </div>
 
