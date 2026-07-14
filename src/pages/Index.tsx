@@ -22,22 +22,6 @@ const Index = () => {
     interpretDream(dream);
   };
 
-  // Auto-scroll to the interpretation tool on load so it's the first thing users see
-  useEffect(() => {
-    const t = setTimeout(() => scrollToInterpret(), 100);
-    return () => clearTimeout(t);
-  }, []);
-
-  const { interpretation, isLoading, sources, infographicUrl, isGeneratingInfographic, interpretDream, reset } = useInterpretDream();
-
-  const scrollToInterpret = () => {
-    interpretSectionRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  const handleDreamSubmit = (dream: string) => {
-    interpretDream(dream);
-  };
-
   return (
     <div className="min-h-screen starfield geometric-pattern">
       <div className="relative z-10">
@@ -50,46 +34,69 @@ const Index = () => {
             <span className="font-serif text-lg text-gold tracking-wide">BinSirin</span>
           </div>
 
-          <div className="flex items-center gap-4 sm:gap-6 text-sm">
-            <div className="hidden sm:flex items-center gap-6">
-              <a href="#why-different" className="text-muted-foreground hover:text-gold transition-colors">
-                Why Different
-              </a>
-              <a href="#sources" className="text-muted-foreground hover:text-gold transition-colors">
-                Sources
-              </a>
-              <a href="#faq" className="text-muted-foreground hover:text-gold transition-colors">
-                FAQ
-              </a>
-            </div>
-            
-            {user ? (
-              <Link to="/journal">
-                <Button variant="outline" size="sm" className="border-gold/30 hover:bg-gold/10">
-                  {subscription.subscribed && <Crown className="w-3.5 h-3.5 mr-1.5 text-gold" />}
-                  <User className="w-3.5 h-3.5 mr-1.5" />
-                  Journal
-                </Button>
-              </Link>
-            ) : (
-              <Link to="/auth">
-                <Button variant="outline" size="sm" className="border-gold/30 hover:bg-gold/10">
-                  <User className="w-3.5 h-3.5 mr-1.5" />
-                  Sign In
-                </Button>
-              </Link>
-            )}
+          <div className="hidden sm:flex items-center gap-6 text-sm">
+            <a href="#why-different" className="text-muted-foreground hover:text-gold transition-colors">
+              Why Different
+            </a>
+            <a href="#sources" className="text-muted-foreground hover:text-gold transition-colors">
+              Sources
+            </a>
+            <a href="#faq" className="text-muted-foreground hover:text-gold transition-colors">
+              FAQ
+            </a>
           </div>
         </nav>
 
-        {/* Hero Section */}
-        <HeroSection onStartInterpreting={scrollToInterpret} />
+        {/* Dream Input Section - the tool is the first thing you see */}
+        <section ref={interpretSectionRef} className="pt-8 pb-12 sm:pt-12 sm:pb-20" id="interpret">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-8 sm:mb-10">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif text-gradient-gold mb-3 sm:mb-4">
+                BinSirin
+              </h1>
+              <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
+                Describe your dream and receive authentic interpretations from classical Islamic scholars.
+              </p>
+            </div>
+
+            <DreamInput
+              onSubmit={handleDreamSubmit}
+              isLoading={isLoading}
+              disabled={false}
+            />
+
+            <InterpretationResult
+              interpretation={interpretation}
+              isStreaming={isLoading}
+              sources={sources}
+            />
+
+            <DreamInfographic
+              imageUrl={infographicUrl}
+              isGenerating={isGeneratingInfographic}
+            />
+
+            {interpretation && !isLoading && (
+              <div className="w-full max-w-3xl mx-auto mt-6 flex justify-center">
+                <Button
+                  variant="outline"
+                  onClick={reset}
+                  className="border-gold/30 hover:bg-gold/10"
+                >
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                  New Dream
+                </Button>
+              </div>
+            )}
+          </div>
+        </section>
 
         {/* Differentiator Section */}
         <DifferentiatorSection />
 
         {/* Sources Showcase */}
         <SourcesShowcase />
+
 
         {/* Dream Input Section */}
         <section ref={interpretSectionRef} className="py-12 sm:py-20" id="interpret">
