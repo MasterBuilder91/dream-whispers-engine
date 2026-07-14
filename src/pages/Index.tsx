@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef } from "react";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { DifferentiatorSection } from "@/components/landing/DifferentiatorSection";
 import { SourcesShowcase } from "@/components/landing/SourcesShowcase";
