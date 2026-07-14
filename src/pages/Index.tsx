@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { Helmet } from "react-helmet-async";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { DifferentiatorSection } from "@/components/landing/DifferentiatorSection";
 import { SourcesShowcase } from "@/components/landing/SourcesShowcase";
@@ -9,6 +10,49 @@ import { DreamInfographic } from "@/components/DreamInfographic";
 import { useInterpretDream } from "@/hooks/useInterpretDream";
 import { Moon, BookOpen, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: "What makes BinSirin different from other dream interpretation sites?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "BinSirin retrieves interpretations directly from the classical texts of Ibn Sirin and Al-Nabulsi. Every response cites the exact source passage — no fabricated meanings, no modern or psychological methods.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "How does the engine produce an interpretation?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Your dream symbols are matched against the classical corpus of Ibn Sirin and Al-Nabulsi. The relevant passages are retrieved and shown alongside the interpretation, so every response can be verified against the original scholarly text.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Is BinSirin free to use?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Yes. Dream interpretation is free with no limits. A free account lets you save dreams to a journal. Premium ($4.99/mo) adds unlimited storage, pattern analysis, and mood tracking.",
+      },
+    },
+  ],
+};
+
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "BinSirin",
+  alternateName: "رفيق الأحلام",
+  url: "https://binsirin.com/",
+  logo: "https://binsirin.com/pwa-512x512.png",
+  description:
+    "Authentic Islamic dream interpretation grounded in the classical texts of Ibn Sirin and Al-Nabulsi.",
+};
+
 
 const Index = () => {
   const interpretSectionRef = useRef<HTMLDivElement>(null);

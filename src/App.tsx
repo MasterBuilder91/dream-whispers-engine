@@ -23,7 +23,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/install" element={<Install />} />
-              <Route path="/install" element={<Install />} />
+
               <Route path="/import" element={<ImportData />} />
               <Route path="/admin/ingest" element={<AdminIngest />} />
               <Route path="*" element={<NotFound />} />
