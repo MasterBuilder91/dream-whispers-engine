@@ -186,7 +186,7 @@ export default function Journal() {
                     <h3 className="font-semibold text-lg">Upgrade to Premium</h3>
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    Unlimited dreams, AI pattern analysis, and full classical text access.{" "}
+                    Unlimited dreams, pattern analysis, and full classical text access.{" "}
                     <span className="text-gold">{FREE_DREAM_LIMIT - dreams.length} free entries remaining.</span>
                   </p>
                 </div>
@@ -218,7 +218,7 @@ export default function Journal() {
                     <h3 className="font-semibold text-lg">Premium Active</h3>
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    Unlimited dreams, AI pattern analysis enabled.
+                    Unlimited dreams, pattern analysis enabled.
                     {subscription.subscriptionEnd && (
                       <> Renews {format(new Date(subscription.subscriptionEnd), "MMM d, yyyy")}</>
                     )}
