@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { Helmet } from "react-helmet-async";
-import { HeroSection } from "@/components/landing/HeroSection";
+import { Link } from "react-router-dom";
 import { DifferentiatorSection } from "@/components/landing/DifferentiatorSection";
 import { SourcesShowcase } from "@/components/landing/SourcesShowcase";
 import { FAQSection } from "@/components/landing/FAQSection";
@@ -8,7 +8,8 @@ import { DreamInput } from "@/components/DreamInput";
 import { InterpretationResult } from "@/components/InterpretationResult";
 import { DreamInfographic } from "@/components/DreamInfographic";
 import { useInterpretDream } from "@/hooks/useInterpretDream";
-import { Moon, BookOpen, RefreshCw } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { Moon, BookOpen, RefreshCw, Sparkles, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const faqJsonLd = {
@@ -36,7 +37,7 @@ const faqJsonLd = {
       name: "Is BinSirin free to use?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Yes. Dream interpretation is free with no limits. A free account lets you save dreams to a journal. Premium ($4.99/mo) adds unlimited storage, pattern analysis, and mood tracking.",
+        text: "The free plan gives you 3 dream interpretations per month, the full A–Z symbol dictionary, and a small journal. Premium ($4.99/mo) unlocks unlimited interpretations, shareable dream infographics, full journaling, and monthly trend analysis.",
       },
     },
   ],
@@ -56,11 +57,18 @@ const organizationJsonLd = {
 
 const Index = () => {
   const interpretSectionRef = useRef<HTMLDivElement>(null);
-  const { interpretation, isLoading, sources, infographicUrl, isGeneratingInfographic, interpretDream, reset } = useInterpretDream();
-
-  const scrollToInterpret = () => {
-    interpretSectionRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  const { subscription, user } = useAuth();
+  const isPremium = subscription.subscribed || subscription.isAdmin;
+  const {
+    interpretation,
+    isLoading,
+    sources,
+    infographicUrl,
+    isGeneratingInfographic,
+    limitError,
+    interpretDream,
+    reset,
+  } = useInterpretDream({ canUseInfographic: isPremium });
 
   const handleDreamSubmit = (dream: string) => {
     interpretDream(dream);
@@ -89,18 +97,24 @@ const Index = () => {
           </div>
 
           <div className="hidden sm:flex items-center gap-6 text-sm">
-            <a href="#why-different" className="text-muted-foreground hover:text-gold transition-colors">
-              Why Different
-            </a>
-            <a href="#sources" className="text-muted-foreground hover:text-gold transition-colors">
-              Sources
-            </a>
             <a href="/dictionary" className="text-muted-foreground hover:text-gold transition-colors">
               Dictionary
             </a>
+            <Link to="/pricing" className="text-muted-foreground hover:text-gold transition-colors">
+              Pricing
+            </Link>
             <a href="#faq" className="text-muted-foreground hover:text-gold transition-colors">
               FAQ
             </a>
+            {user ? (
+              <Link to="/journal" className="text-muted-foreground hover:text-gold transition-colors">
+                Journal
+              </Link>
+            ) : (
+              <Link to="/auth" className="text-gold hover:opacity-80 transition-opacity">
+                Sign in
+              </Link>
+            )}
           </div>
         </nav>
 
@@ -121,8 +135,42 @@ const Index = () => {
             <DreamInput
               onSubmit={handleDreamSubmit}
               isLoading={isLoading}
-              disabled={false}
+              disabled={!!limitError}
             />
+
+            {limitError && (
+              <div className="w-full max-w-3xl mx-auto mt-6 dream-card rounded-2xl p-6 border border-gold/30">
+                <div className="flex items-start gap-3">
+                  <Lock className="w-5 h-5 text-gold flex-shrink-0 mt-0.5" />
+                  <div className="flex-1">
+                    <h3 className="font-serif text-lg text-gold mb-1">
+                      {limitError.reason === "rate_limited"
+                        ? "One moment…"
+                        : limitError.reason === "anon_limit"
+                        ? "Create a free account to keep going"
+                        : "You've used your free interpretations this month"}
+                    </h3>
+                    <p className="text-sm text-muted-foreground mb-4">{limitError.message}</p>
+                    <div className="flex flex-wrap gap-2">
+                      {limitError.reason === "anon_limit" && (
+                        <Link to="/auth">
+                          <Button className="bg-gradient-gold text-primary-foreground">
+                            Sign up free (3/month)
+                          </Button>
+                        </Link>
+                      )}
+                      {limitError.reason === "monthly_limit" && (
+                        <Link to="/pricing">
+                          <Button className="bg-gradient-gold text-primary-foreground">
+                            <Sparkles className="w-4 h-4 mr-2" /> Upgrade to Premium — Unlimited
+                          </Button>
+                        </Link>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             <InterpretationResult
               interpretation={interpretation}
@@ -130,10 +178,29 @@ const Index = () => {
               sources={sources}
             />
 
-            <DreamInfographic
-              imageUrl={infographicUrl}
-              isGenerating={isGeneratingInfographic}
-            />
+            {isPremium ? (
+              <DreamInfographic
+                imageUrl={infographicUrl}
+                isGenerating={isGeneratingInfographic}
+              />
+            ) : (
+              interpretation && !isLoading && (
+                <div className="w-full max-w-3xl mx-auto mt-6 dream-card rounded-2xl p-6 text-center border-dashed border border-gold/30">
+                  <Sparkles className="w-8 h-8 text-gold mx-auto mb-3" />
+                  <h3 className="font-serif text-xl text-gradient-gold mb-2">
+                    See this dream as an illuminated infographic
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-4 max-w-md mx-auto">
+                    Premium members get a shareable, manuscript-style visual for every dream — plus unlimited interpretations.
+                  </p>
+                  <Link to="/pricing">
+                    <Button className="bg-gradient-gold text-primary-foreground">
+                      Upgrade to Premium — $4.99/mo
+                    </Button>
+                  </Link>
+                </div>
+              )
+            )}
 
             {interpretation && !isLoading && (
               <div className="w-full max-w-3xl mx-auto mt-6 flex justify-center">

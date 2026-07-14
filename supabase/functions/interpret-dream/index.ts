@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { resolveAccess, checkLimit, recordUsage, limitResponse } from "../_shared/limits.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -30,6 +31,18 @@ serve(async (req) => {
         JSON.stringify({ error: "Dream description is required" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
+    }
+
+    // Free-tier enforcement: rate-limit + monthly cap (bypassed for admin/premium).
+    // Follow-up messages inside the same conversation don't count.
+    const access = await resolveAccess(req);
+    if (!isFollowUp) {
+      const limit = await checkLimit(access);
+      if (!limit.allowed) {
+        return limitResponse(limit, corsHeaders);
+      }
+      // Record usage up-front so a slow AI response can't be raced.
+      await recordUsage(access);
     }
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
