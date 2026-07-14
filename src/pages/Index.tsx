@@ -1,5 +1,4 @@
 import { useRef } from "react";
-import { Link } from "react-router-dom";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { DifferentiatorSection } from "@/components/landing/DifferentiatorSection";
 import { SourcesShowcase } from "@/components/landing/SourcesShowcase";
@@ -8,12 +7,10 @@ import { DreamInput } from "@/components/DreamInput";
 import { InterpretationResult } from "@/components/InterpretationResult";
 import { DreamInfographic } from "@/components/DreamInfographic";
 import { useInterpretDream } from "@/hooks/useInterpretDream";
-import { useAuth } from "@/contexts/AuthContext";
-import { Moon, BookOpen, User, Crown, RefreshCw } from "lucide-react";
+import { Moon, BookOpen, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Index = () => {
-  const { user, subscription } = useAuth();
   const interpretSectionRef = useRef<HTMLDivElement>(null);
   const { interpretation, isLoading, sources, infographicUrl, isGeneratingInfographic, interpretDream, reset } = useInterpretDream();
 
@@ -37,77 +34,48 @@ const Index = () => {
             <span className="font-serif text-lg text-gold tracking-wide">BinSirin</span>
           </div>
 
-          <div className="flex items-center gap-4 sm:gap-6 text-sm">
-            <div className="hidden sm:flex items-center gap-6">
-              <a href="#why-different" className="text-muted-foreground hover:text-gold transition-colors">
-                Why Different
-              </a>
-              <a href="#sources" className="text-muted-foreground hover:text-gold transition-colors">
-                Sources
-              </a>
-              <a href="#faq" className="text-muted-foreground hover:text-gold transition-colors">
-                FAQ
-              </a>
-            </div>
-            
-            {user ? (
-              <Link to="/journal">
-                <Button variant="outline" size="sm" className="border-gold/30 hover:bg-gold/10">
-                  {subscription.subscribed && <Crown className="w-3.5 h-3.5 mr-1.5 text-gold" />}
-                  <User className="w-3.5 h-3.5 mr-1.5" />
-                  Journal
-                </Button>
-              </Link>
-            ) : (
-              <Link to="/auth">
-                <Button variant="outline" size="sm" className="border-gold/30 hover:bg-gold/10">
-                  <User className="w-3.5 h-3.5 mr-1.5" />
-                  Sign In
-                </Button>
-              </Link>
-            )}
+          <div className="hidden sm:flex items-center gap-6 text-sm">
+            <a href="#why-different" className="text-muted-foreground hover:text-gold transition-colors">
+              Why Different
+            </a>
+            <a href="#sources" className="text-muted-foreground hover:text-gold transition-colors">
+              Sources
+            </a>
+            <a href="#faq" className="text-muted-foreground hover:text-gold transition-colors">
+              FAQ
+            </a>
           </div>
         </nav>
 
-        {/* Hero Section */}
-        <HeroSection onStartInterpreting={scrollToInterpret} />
-
-        {/* Differentiator Section */}
-        <DifferentiatorSection />
-
-        {/* Sources Showcase */}
-        <SourcesShowcase />
-
-        {/* Dream Input Section */}
-        <section ref={interpretSectionRef} className="py-12 sm:py-20" id="interpret">
+        {/* Dream Input Section - the tool is the first thing you see */}
+        <section ref={interpretSectionRef} className="pt-8 pb-12 sm:pt-12 sm:pb-20" id="interpret">
           <div className="container mx-auto px-4">
-            <div className="text-center mb-10">
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif text-gradient-gold mb-4">
-                Interpret Your Dream
-              </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <div className="text-center mb-8 sm:mb-10">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif text-gradient-gold mb-3 sm:mb-4">
+                BinSirin
+              </h1>
+              <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
                 Describe your dream and receive authentic interpretations from classical Islamic scholars.
               </p>
             </div>
 
-            <DreamInput 
-              onSubmit={handleDreamSubmit} 
+            <DreamInput
+              onSubmit={handleDreamSubmit}
               isLoading={isLoading}
               disabled={false}
             />
 
-            <InterpretationResult 
-              interpretation={interpretation} 
+            <InterpretationResult
+              interpretation={interpretation}
               isStreaming={isLoading}
               sources={sources}
             />
 
-            <DreamInfographic 
+            <DreamInfographic
               imageUrl={infographicUrl}
               isGenerating={isGeneratingInfographic}
             />
 
-            {/* New Dream button after interpretation */}
             {interpretation && !isLoading && (
               <div className="w-full max-w-3xl mx-auto mt-6 flex justify-center">
                 <Button
@@ -122,6 +90,13 @@ const Index = () => {
             )}
           </div>
         </section>
+
+        {/* Differentiator Section */}
+        <DifferentiatorSection />
+
+        {/* Sources Showcase */}
+        <SourcesShowcase />
+
 
         {/* FAQ Section */}
         <FAQSection />
