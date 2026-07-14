@@ -1,5 +1,4 @@
-import { useRef } from "react";
-import { Link } from "react-router-dom";
+import { useRef, useEffect } from "react";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { DifferentiatorSection } from "@/components/landing/DifferentiatorSection";
 import { SourcesShowcase } from "@/components/landing/SourcesShowcase";
@@ -8,13 +7,27 @@ import { DreamInput } from "@/components/DreamInput";
 import { InterpretationResult } from "@/components/InterpretationResult";
 import { DreamInfographic } from "@/components/DreamInfographic";
 import { useInterpretDream } from "@/hooks/useInterpretDream";
-import { useAuth } from "@/contexts/AuthContext";
-import { Moon, BookOpen, User, Crown, RefreshCw } from "lucide-react";
+import { Moon, BookOpen, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Index = () => {
-  const { user, subscription } = useAuth();
   const interpretSectionRef = useRef<HTMLDivElement>(null);
+  const { interpretation, isLoading, sources, infographicUrl, isGeneratingInfographic, interpretDream, reset } = useInterpretDream();
+
+  const scrollToInterpret = () => {
+    interpretSectionRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const handleDreamSubmit = (dream: string) => {
+    interpretDream(dream);
+  };
+
+  // Auto-scroll to the interpretation tool on load so it's the first thing users see
+  useEffect(() => {
+    const t = setTimeout(() => scrollToInterpret(), 100);
+    return () => clearTimeout(t);
+  }, []);
+
   const { interpretation, isLoading, sources, infographicUrl, isGeneratingInfographic, interpretDream, reset } = useInterpretDream();
 
   const scrollToInterpret = () => {
