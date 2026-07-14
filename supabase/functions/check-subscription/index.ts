@@ -95,12 +95,27 @@ serve(async (req) => {
       const subscription = subscriptions.data[0];
       subscriptionEnd = new Date(subscription.current_period_end * 1000).toISOString();
       logStep("Active subscription found", { subscriptionId: subscription.id, endDate: subscriptionEnd });
-      
+
       productId = subscription.items.data[0].price.product;
       logStep("Determined subscription tier", { productId });
     } else {
       logStep("No active subscription found");
     }
+
+    // Cache the current subscription state so edge functions can gate features
+    // without a Stripe round-trip on every call.
+    await supabaseClient.from("subscriptions").upsert(
+      {
+        user_id: user.id,
+        stripe_customer_id: customerId,
+        stripe_subscription_id: hasActiveSub ? subscriptions.data[0].id : null,
+        status: hasActiveSub ? "active" : "inactive",
+        plan: hasActiveSub ? "premium" : "free",
+        current_period_end: subscriptionEnd,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "user_id" },
+    );
 
     return new Response(JSON.stringify({
       subscribed: hasActiveSub,
