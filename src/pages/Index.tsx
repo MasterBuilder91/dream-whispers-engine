@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { Helmet } from "react-helmet-async";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { DifferentiatorSection } from "@/components/landing/DifferentiatorSection";
 import { SourcesShowcase } from "@/components/landing/SourcesShowcase";
@@ -9,6 +10,49 @@ import { DreamInfographic } from "@/components/DreamInfographic";
 import { useInterpretDream } from "@/hooks/useInterpretDream";
 import { Moon, BookOpen, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: "What makes BinSirin different from other dream interpretation sites?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "BinSirin retrieves interpretations directly from the classical texts of Ibn Sirin and Al-Nabulsi. Every response cites the exact source passage — no fabricated meanings, no modern or psychological methods.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "How does the engine produce an interpretation?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Your dream symbols are matched against the classical corpus of Ibn Sirin and Al-Nabulsi. The relevant passages are retrieved and shown alongside the interpretation, so every response can be verified against the original scholarly text.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Is BinSirin free to use?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Yes. Dream interpretation is free with no limits. A free account lets you save dreams to a journal. Premium ($4.99/mo) adds unlimited storage, pattern analysis, and mood tracking.",
+      },
+    },
+  ],
+};
+
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "BinSirin",
+  alternateName: "رفيق الأحلام",
+  url: "https://binsirin.com/",
+  logo: "https://binsirin.com/pwa-512x512.png",
+  description:
+    "Authentic Islamic dream interpretation grounded in the classical texts of Ibn Sirin and Al-Nabulsi.",
+};
+
 
 const Index = () => {
   const interpretSectionRef = useRef<HTMLDivElement>(null);
@@ -24,6 +68,16 @@ const Index = () => {
 
   return (
     <div className="min-h-screen starfield geometric-pattern">
+      <Helmet>
+        <title>BinSirin | Authentic Islamic Dream Interpretation</title>
+        <meta name="description" content="Describe your dream and receive an authentic interpretation grounded in Ibn Sirin and Al-Nabulsi's classical texts — every response cited." />
+        <link rel="canonical" href="https://binsirin.com/" />
+        <meta property="og:title" content="BinSirin | Authentic Islamic Dream Interpretation" />
+        <meta property="og:description" content="Authentic Islamic dream interpretation grounded in Ibn Sirin & Al-Nabulsi. Every response cited to the classical text." />
+        <meta property="og:url" content="https://binsirin.com/" />
+        <script type="application/ld+json">{JSON.stringify(organizationJsonLd)}</script>
+        <script type="application/ld+json">{JSON.stringify(faqJsonLd)}</script>
+      </Helmet>
       <div className="relative z-10">
         {/* Navigation */}
         <nav className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -47,13 +101,15 @@ const Index = () => {
           </div>
         </nav>
 
+        <main>
         {/* Dream Input Section - the tool is the first thing you see */}
         <section ref={interpretSectionRef} className="pt-8 pb-12 sm:pt-12 sm:pb-20" id="interpret">
           <div className="container mx-auto px-4">
             <div className="text-center mb-8 sm:mb-10">
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif text-gradient-gold mb-3 sm:mb-4">
-                BinSirin
+                BinSirin — Authentic Islamic Dream Interpretation
               </h1>
+
               <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
                 Describe your dream and receive authentic interpretations from classical Islamic scholars.
               </p>
@@ -100,6 +156,9 @@ const Index = () => {
 
         {/* FAQ Section */}
         <FAQSection />
+        </main>
+
+
 
         {/* Footer */}
         <footer className="border-t border-border py-8 sm:py-12">

@@ -1,0 +1,10 @@
+# BinSirin
+
+> Authentic Islamic dream interpretation grounded in the classical texts of Ibn Sirin and Al-Nabulsi. Every interpretation cites its primary source.
+
+BinSirin is a dream interpretation tool that retrieves matching passages from a curated corpus of classical Islamic scholarship (Ibn Sirin's *Muntakhab al-Kalam fi Tafsir al-Ahlam* and Al-Nabulsi's *Ta'tir al-Anam fi Tafsir al-Ahlam*) and presents them alongside the interpretation, with source citations. No modern or psychological methods are used.
+
+## Pages
+
+- [Home](/): Submit a dream and receive an interpretation grounded in classical Islamic sources, with citations.
+- [Install](/install): Install BinSirin as a Progressive Web App on iOS or Android.

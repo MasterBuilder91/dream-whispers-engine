@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
+import { Helmet } from "react-helmet-async";
 import { Moon, Stars, Download, Check, Smartphone, Share, MoreVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -55,7 +57,15 @@ export default function Install() {
 
   return (
     <div className="min-h-screen starfield geometric-pattern flex items-center justify-center p-4">
-      <div className="relative z-10 w-full max-w-md text-center">
+      <Helmet>
+        <title>Install BinSirin — Islamic Dream Interpretation App</title>
+        <meta name="description" content="Install BinSirin on iPhone or Android for quick access to authentic Islamic dream interpretation from Ibn Sirin and Al-Nabulsi." />
+        <link rel="canonical" href="https://binsirin.com/install" />
+        <meta property="og:title" content="Install BinSirin — Islamic Dream Interpretation App" />
+        <meta property="og:description" content="Add BinSirin to your home screen for offline access to authentic Islamic dream interpretation." />
+        <meta property="og:url" content="https://binsirin.com/install" />
+      </Helmet>
+      <main className="relative z-10 w-full max-w-md text-center">
         {/* Logo */}
         <div className="fade-in-up mb-8">
           <div className="flex justify-center mb-4">
@@ -68,9 +78,10 @@ export default function Install() {
               </div>
             </div>
           </div>
-          <h1 className="text-3xl font-serif text-gradient-gold mb-2">BinSirin</h1>
+          <h1 className="text-3xl font-serif text-gradient-gold mb-2">Install BinSirin — Islamic Dream Interpretation</h1>
           <p className="text-muted-foreground">رفيق الأحلام</p>
         </div>
+
 
         {/* Install Card */}
         <div className="glass-card rounded-2xl p-6 sm:p-8 fade-in-up" style={{ animationDelay: "0.1s" }}>
@@ -183,7 +194,8 @@ export default function Install() {
             ← Continue in browser
           </a>
         </div>
-      </div>
+      </main>
     </div>
+
   );
 }
