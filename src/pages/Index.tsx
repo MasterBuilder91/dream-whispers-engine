@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { Helmet } from "react-helmet-async";
-import { HeroSection } from "@/components/landing/HeroSection";
+import { Link } from "react-router-dom";
 import { DifferentiatorSection } from "@/components/landing/DifferentiatorSection";
 import { SourcesShowcase } from "@/components/landing/SourcesShowcase";
 import { FAQSection } from "@/components/landing/FAQSection";
@@ -8,7 +8,8 @@ import { DreamInput } from "@/components/DreamInput";
 import { InterpretationResult } from "@/components/InterpretationResult";
 import { DreamInfographic } from "@/components/DreamInfographic";
 import { useInterpretDream } from "@/hooks/useInterpretDream";
-import { Moon, BookOpen, RefreshCw } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { Moon, BookOpen, RefreshCw, Sparkles, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const faqJsonLd = {
