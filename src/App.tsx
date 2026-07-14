@@ -6,6 +6,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import Install from "./pages/Install";
+import Dictionary from "./pages/Dictionary";
+import DictionaryEntry from "./pages/DictionaryEntry";
 import ImportData from "./pages/ImportData";
 import AdminIngest from "./pages/AdminIngest";
 import NotFound from "./pages/NotFound";
@@ -23,6 +25,9 @@ function App() {
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/install" element={<Install />} />
+              <Route path="/dictionary" element={<Dictionary />} />
+              <Route path="/dictionary/:slug" element={<DictionaryEntry />} />
+
 
               <Route path="/import" element={<ImportData />} />
               <Route path="/admin/ingest" element={<AdminIngest />} />

@@ -95,6 +95,9 @@ const Index = () => {
             <a href="#sources" className="text-muted-foreground hover:text-gold transition-colors">
               Sources
             </a>
+            <a href="/dictionary" className="text-muted-foreground hover:text-gold transition-colors">
+              Dictionary
+            </a>
             <a href="#faq" className="text-muted-foreground hover:text-gold transition-colors">
               FAQ
             </a>

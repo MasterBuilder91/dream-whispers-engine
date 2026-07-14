@@ -7,6 +7,50 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://binsirin.com/dictionary</loc>
+    <lastmod>2026-07-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url><loc>https://binsirin.com/dictionary/angel</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://binsirin.com/dictionary/blood</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://binsirin.com/dictionary/book</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://binsirin.com/dictionary/cat</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://binsirin.com/dictionary/camel</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://binsirin.com/dictionary/death</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://binsirin.com/dictionary/door</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://binsirin.com/dictionary/eagle</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://binsirin.com/dictionary/eye</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://binsirin.com/dictionary/fire</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://binsirin.com/dictionary/fish</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://binsirin.com/dictionary/gold</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://binsirin.com/dictionary/garden</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://binsirin.com/dictionary/house</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://binsirin.com/dictionary/horse</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://binsirin.com/dictionary/iron</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://binsirin.com/dictionary/jewel</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://binsirin.com/dictionary/key</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://binsirin.com/dictionary/light</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://binsirin.com/dictionary/milk</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://binsirin.com/dictionary/moon</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://binsirin.com/dictionary/mountain</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://binsirin.com/dictionary/night</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://binsirin.com/dictionary/oil</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://binsirin.com/dictionary/prayer</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://binsirin.com/dictionary/quran</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://binsirin.com/dictionary/rain</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://binsirin.com/dictionary/river</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://binsirin.com/dictionary/snake</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://binsirin.com/dictionary/star</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://binsirin.com/dictionary/sun</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://binsirin.com/dictionary/tree</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://binsirin.com/dictionary/teeth</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://binsirin.com/dictionary/umbrella</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://binsirin.com/dictionary/veil</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://binsirin.com/dictionary/water</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://binsirin.com/dictionary/wedding</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://binsirin.com/dictionary/wolf</loc><changefreq>yearly</changefreq><priority>0.6</priority></url>
+  <url>
     <loc>https://binsirin.com/install</loc>
     <lastmod>2026-07-14</lastmod>
     <changefreq>monthly</changefreq>
