@@ -57,11 +57,18 @@ const organizationJsonLd = {
 
 const Index = () => {
   const interpretSectionRef = useRef<HTMLDivElement>(null);
-  const { interpretation, isLoading, sources, infographicUrl, isGeneratingInfographic, interpretDream, reset } = useInterpretDream();
-
-  const scrollToInterpret = () => {
-    interpretSectionRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  const { subscription, user } = useAuth();
+  const isPremium = subscription.subscribed || subscription.isAdmin;
+  const {
+    interpretation,
+    isLoading,
+    sources,
+    infographicUrl,
+    isGeneratingInfographic,
+    limitError,
+    interpretDream,
+    reset,
+  } = useInterpretDream({ canUseInfographic: isPremium });
 
   const handleDreamSubmit = (dream: string) => {
     interpretDream(dream);
@@ -90,18 +97,24 @@ const Index = () => {
           </div>
 
           <div className="hidden sm:flex items-center gap-6 text-sm">
-            <a href="#why-different" className="text-muted-foreground hover:text-gold transition-colors">
-              Why Different
-            </a>
-            <a href="#sources" className="text-muted-foreground hover:text-gold transition-colors">
-              Sources
-            </a>
             <a href="/dictionary" className="text-muted-foreground hover:text-gold transition-colors">
               Dictionary
             </a>
+            <Link to="/pricing" className="text-muted-foreground hover:text-gold transition-colors">
+              Pricing
+            </Link>
             <a href="#faq" className="text-muted-foreground hover:text-gold transition-colors">
               FAQ
             </a>
+            {user ? (
+              <Link to="/journal" className="text-muted-foreground hover:text-gold transition-colors">
+                Journal
+              </Link>
+            ) : (
+              <Link to="/auth" className="text-gold hover:opacity-80 transition-opacity">
+                Sign in
+              </Link>
+            )}
           </div>
         </nav>
 
