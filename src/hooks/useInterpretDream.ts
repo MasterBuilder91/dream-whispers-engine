@@ -72,6 +72,7 @@ export function useInterpretDream(): UseInterpretDreamReturn {
     setIsGeneratingInfographic(false);
 
     let collectedSources: SourceCitation[] = [];
+    let fullInterpretation = "";
 
     try {
       const response = await fetch(INTERPRET_URL, {
@@ -154,6 +155,7 @@ export function useInterpretDream(): UseInterpretDreamReturn {
             // Otherwise it's AI content
             const content = parsed.choices?.[0]?.delta?.content;
             if (content) {
+              fullInterpretation += content;
               setInterpretation((prev) => prev + content);
             }
           } catch {
@@ -177,6 +179,7 @@ export function useInterpretDream(): UseInterpretDreamReturn {
             if (parsed.type === "sources") continue;
             const content = parsed.choices?.[0]?.delta?.content;
             if (content) {
+              fullInterpretation += content;
               setInterpretation((prev) => prev + content);
             }
           } catch {
@@ -185,10 +188,10 @@ export function useInterpretDream(): UseInterpretDreamReturn {
         }
       }
 
-      // After interpretation completes, generate infographic using the full interpretation text
-      // (the edge function extracts real visual symbols from it; we no longer pass citation titles).
+      // After interpretation completes, generate infographic using the full text
+      // (edge function extracts real visual symbols from it — no citation titles).
       void collectedSources;
-      generateInfographic(dreamDescription, interpretation);
+      generateInfographic(dreamDescription, fullInterpretation);
 
     } catch (error) {
       console.error("Interpretation error:", error);
