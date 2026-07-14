@@ -112,7 +112,7 @@ export function SignupPrompt({ variant = "upgrade-benefits" }: SignupPromptProps
           <div className="flex items-start gap-3">
             <TrendingUp className="w-5 h-5 text-gold shrink-0 mt-0.5" />
             <div>
-              <p className="font-medium text-sm">AI Pattern Analysis</p>
+              <p className="font-medium text-sm">Pattern Analysis</p>
               <p className="text-xs text-muted-foreground">Discover recurring symbols and themes.</p>
             </div>
           </div>
@@ -155,7 +155,7 @@ export function SignupPrompt({ variant = "upgrade-benefits" }: SignupPromptProps
           <TrendingUp className="w-5 h-5 text-gold shrink-0 mt-0.5" />
           <div>
             <p className="font-medium text-sm">Pattern Detection</p>
-            <p className="text-xs text-muted-foreground">AI finds recurring symbols across your history.</p>
+            <p className="text-xs text-muted-foreground">Discover recurring symbols across your history.</p>
           </div>
         </div>
         

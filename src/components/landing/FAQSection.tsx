@@ -9,11 +9,11 @@ export function FAQSection() {
   const faqs = [
     {
       question: "What makes this different from other Islamic dream interpretation apps?",
-      answer: "This is the ONLY engine using actual primary sources from classical scholars Ibn Sirin and Al-Nabulsi. Every single interpretation is cited with its exact source. Other apps use AI that makes up interpretations or mixes authentic content with fabricated meanings — with no way to tell the difference."
+      answer: "This is the ONLY engine grounded in actual primary sources from classical scholars Ibn Sirin and Al-Nabulsi. Every single interpretation is cited with its exact source. Other apps fabricate interpretations or mix authentic content with made-up meanings — with no way to tell the difference."
     },
     {
-      question: "Is the AI interpreting my dreams?",
-      answer: "No. AI is merely a technological tool — like a sophisticated search engine. It matches your dream symbols to the classical texts and presents what the scholars wrote. The actual interpretations come directly from Ibn Sirin and Al-Nabulsi's writings. The scholars interpret, AI just helps you find their words."
+      question: "How does the engine produce an interpretation?",
+      answer: "Your dream symbols are matched against the classical corpus of Ibn Sirin and Al-Nabulsi. The relevant passages are retrieved and shown to you alongside the interpretation, so you can read the exact scholarly text behind every response and judge it for yourself."
     },
     {
       question: "How many dream interpretations are in the database?",
@@ -25,7 +25,7 @@ export function FAQSection() {
     },
     {
       question: "Is this service free?",
-      answer: "Yes! Dream interpretation is completely free with no limits. Create a free account to save your dreams to a journal and track recurring symbols. Premium subscribers ($4.99/mo) get unlimited storage, AI pattern analysis, and mood trend insights."
+      answer: "Yes! Dream interpretation is completely free with no limits. Create a free account to save your dreams to a journal and track recurring symbols. Premium subscribers ($4.99/mo) get unlimited storage, pattern analysis, and mood trend insights."
     },
     {
       question: "What languages are supported?",

@@ -1,4 +1,4 @@
-import { XCircle, CheckCircle, AlertTriangle, BookOpen, Cpu, Quote, Eye, Link2 } from "lucide-react";
+import { XCircle, CheckCircle, AlertTriangle, BookOpen, Quote, Eye, Link2 } from "lucide-react";
 
 export function DifferentiatorSection() {
   return (
@@ -10,7 +10,7 @@ export function DifferentiatorSection() {
             The Hallucination Problem
           </h2>
           <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto">
-            Most "Islamic AI" apps fabricate interpretations. We don't.
+            Most dream apps fabricate interpretations. We cite every one.
           </p>
         </div>
 
@@ -23,7 +23,7 @@ export function DifferentiatorSection() {
                 <XCircle className="w-6 h-6 text-destructive" />
               </div>
               <div>
-                <h3 className="text-xl sm:text-2xl font-serif text-destructive">Other "Islamic AI" Tools</h3>
+                <h3 className="text-xl sm:text-2xl font-serif text-destructive">Other Dream Interpretation Apps</h3>
                 <p className="text-sm text-muted-foreground">The uncomfortable truth</p>
               </div>
             </div>
@@ -32,7 +32,7 @@ export function DifferentiatorSection() {
               <li className="flex items-start gap-3">
                 <AlertTriangle className="w-5 h-5 text-destructive mt-0.5 flex-shrink-0" />
                 <span className="text-foreground/80">
-                  <strong className="text-destructive">Pure hallucination</strong> — AI summarizes "what it thinks scholars say" without reading actual texts
+                  <strong className="text-destructive">Pure hallucination</strong> — output generated from thin air, summarizing "what it thinks scholars say" without ever reading actual texts
                 </span>
               </li>
               <li className="flex items-start gap-3">
@@ -100,23 +100,18 @@ export function DifferentiatorSection() {
         {/* The key insight */}
         <div className="dream-card rounded-2xl p-6 sm:p-10 text-center max-w-4xl mx-auto">
           <div className="flex justify-center mb-6">
-            <div className="flex items-center gap-4">
-              <Cpu className="w-8 h-8 text-muted-foreground" />
-              <span className="text-2xl text-muted-foreground">≠</span>
-              <BookOpen className="w-8 h-8 text-gold" />
-            </div>
+            <BookOpen className="w-10 h-10 text-gold" />
           </div>
-          
+
           <h3 className="text-2xl sm:text-3xl font-serif text-foreground mb-4">
-            AI Is <span className="text-gold">Not</span> The Interpreter
+            Grounded in <span className="text-gold">Classical Texts</span>
           </h3>
-          
+
           <p className="text-lg text-foreground/70 mb-6 max-w-2xl mx-auto">
-            Let's be crystal clear: AI is merely a <strong>retrieval tool</strong> — like a search engine for classical texts. 
-            The actual interpretations come from <strong className="text-gold">Ibn Sirin</strong> and <strong className="text-gold">Al-Nabulsi</strong>, 
-            scholars who dedicated their lives to this sacred science.
+            Every response is grounded in the writings of <strong className="text-gold">Ibn Sirin</strong> and <strong className="text-gold">Al-Nabulsi</strong>.
+            You see the exact passages used, so you can verify each interpretation against the original scholarly work.
           </p>
-          
+
           <div className="border-t border-border pt-6">
             <Quote className="w-8 h-8 text-gold/50 mx-auto mb-3" />
             <blockquote className="text-lg sm:text-xl font-serif italic text-foreground/80 arabic-text" dir="rtl">
