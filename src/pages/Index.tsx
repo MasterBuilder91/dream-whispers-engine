@@ -156,6 +156,9 @@ const Index = () => {
 
         {/* FAQ Section */}
         <FAQSection />
+        </main>
+
+
 
         {/* Footer */}
         <footer className="border-t border-border py-8 sm:py-12">
