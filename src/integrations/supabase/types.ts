@@ -152,6 +152,36 @@ export type Database = {
         }
         Relationships: []
       }
+      usage_tracking: {
+        Row: {
+          count: number
+          created_at: string
+          id: string
+          ip_hash: string | null
+          last_at: string
+          month: string
+          user_id: string | null
+        }
+        Insert: {
+          count?: number
+          created_at?: string
+          id?: string
+          ip_hash?: string | null
+          last_at?: string
+          month: string
+          user_id?: string | null
+        }
+        Update: {
+          count?: number
+          created_at?: string
+          id?: string
+          ip_hash?: string | null
+          last_at?: string
+          month?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       user_dreams: {
         Row: {
           created_at: string
