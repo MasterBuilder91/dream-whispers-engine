@@ -10,7 +10,7 @@ import Dictionary from "./pages/Dictionary";
 import DictionaryEntry from "./pages/DictionaryEntry";
 import ImportData from "./pages/ImportData";
 import AdminIngest from "./pages/AdminIngest";
-import Pricing from "./pages/Pricing";
+import Support from "./pages/Support";
 import Auth from "./pages/Auth";
 import Journal from "./pages/Journal";
 import NotFound from "./pages/NotFound";
@@ -30,7 +30,8 @@ function App() {
               <Route path="/install" element={<Install />} />
               <Route path="/dictionary" element={<Dictionary />} />
               <Route path="/dictionary/:slug" element={<DictionaryEntry />} />
-              <Route path="/pricing" element={<Pricing />} />
+              <Route path="/support" element={<Support />} />
+              <Route path="/pricing" element={<Support />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/journal" element={<Journal />} />
 

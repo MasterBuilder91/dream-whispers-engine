@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { Moon, Stars, Plus, Crown, LogOut, Loader2, BookOpen, Calendar, Trash2, ExternalLink } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Moon, Plus, LogOut, Loader2, BookOpen, Calendar, Trash2, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useAuth, SUBSCRIPTION_TIERS } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -17,30 +17,11 @@ interface DreamEntry {
   created_at: string;
 }
 
-const FREE_DREAM_LIMIT = 5;
-
 export default function Journal() {
-  const { user, loading: authLoading, subscription, signOut, refreshSubscription } = useAuth();
+  const { user, loading: authLoading, signOut } = useAuth();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const [dreams, setDreams] = useState<DreamEntry[]>([]);
   const [loading, setLoading] = useState(true);
-  const [checkoutLoading, setCheckoutLoading] = useState(false);
-  const [portalLoading, setPortalLoading] = useState(false);
-
-  // Handle checkout redirect
-  useEffect(() => {
-    const checkout = searchParams.get("checkout");
-    if (checkout === "success") {
-      toast.success("Welcome to Premium! Refreshing your subscription status...");
-      refreshSubscription();
-      // Clean URL
-      navigate("/journal", { replace: true });
-    } else if (checkout === "canceled") {
-      toast.info("Checkout canceled. You can upgrade anytime.");
-      navigate("/journal", { replace: true });
-    }
-  }, [searchParams, navigate, refreshSubscription]);
 
   // Redirect if not logged in
   useEffect(() => {
@@ -53,7 +34,7 @@ export default function Journal() {
   useEffect(() => {
     async function fetchDreams() {
       if (!user) return;
-      
+
       try {
         const { data, error } = await supabase
           .from("user_dreams")
@@ -74,38 +55,6 @@ export default function Journal() {
     fetchDreams();
   }, [user]);
 
-  const handleUpgrade = async () => {
-    setCheckoutLoading(true);
-    try {
-      const { data, error } = await supabase.functions.invoke("create-checkout");
-      if (error) throw error;
-      if (data?.url) {
-        window.open(data.url, "_blank");
-      }
-    } catch (error) {
-      console.error("Checkout error:", error);
-      toast.error("Failed to start checkout. Please try again.");
-    } finally {
-      setCheckoutLoading(false);
-    }
-  };
-
-  const handleManageSubscription = async () => {
-    setPortalLoading(true);
-    try {
-      const { data, error } = await supabase.functions.invoke("customer-portal");
-      if (error) throw error;
-      if (data?.url) {
-        window.open(data.url, "_blank");
-      }
-    } catch (error) {
-      console.error("Portal error:", error);
-      toast.error("Failed to open subscription management. Please try again.");
-    } finally {
-      setPortalLoading(false);
-    }
-  };
-
   const handleDeleteDream = async (id: string) => {
     try {
       const { error } = await supabase
@@ -122,7 +71,6 @@ export default function Journal() {
     }
   };
 
-  const canAddMoreDreams = subscription.subscribed || dreams.length < FREE_DREAM_LIMIT;
 
   if (authLoading) {
     return (
@@ -146,12 +94,6 @@ export default function Journal() {
             </a>
 
             <div className="flex items-center gap-3">
-              {subscription.subscribed && (
-                <span className="hidden sm:flex items-center gap-1 px-3 py-1 rounded-full bg-gold/20 text-gold text-sm">
-                  <Crown className="w-3.5 h-3.5" />
-                  Premium
-                </span>
-              )}
               <Button
                 variant="ghost"
                 size="sm"
@@ -176,88 +118,37 @@ export default function Journal() {
             </p>
           </div>
 
-          {/* Subscription Banner */}
-          {!subscription.subscribed && (
-            <div className="glass-card rounded-xl p-6 mb-8 border border-gold/30">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <Crown className="w-5 h-5 text-gold" />
-                    <h3 className="font-semibold text-lg">Upgrade to Premium</h3>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Unlimited dreams, pattern analysis, and full classical text access.{" "}
-                    <span className="text-gold">{FREE_DREAM_LIMIT - dreams.length} free entries remaining.</span>
-                  </p>
+          {/* Support banner */}
+          <div className="glass-card rounded-xl p-6 mb-8 border border-gold/30">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <Heart className="w-5 h-5 text-gold" />
+                  <h3 className="font-semibold text-lg">A free Islamic khidma</h3>
                 </div>
-                <Button
-                  onClick={handleUpgrade}
-                  disabled={checkoutLoading}
-                  className="bg-gradient-gold hover:opacity-90 text-primary-foreground font-semibold shrink-0"
-                >
-                  {checkoutLoading ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <>
-                      <Crown className="w-4 h-4 mr-2" />
-                      {SUBSCRIPTION_TIERS.premium.price}
-                    </>
-                  )}
-                </Button>
+                <p className="text-sm text-muted-foreground">
+                  BinSirin is offered freely, seeking only the pleasure of Allah. Your support keeps it running for the ummah.
+                </p>
               </div>
+              <Button
+                onClick={() => navigate("/support")}
+                className="bg-gradient-gold hover:opacity-90 text-primary-foreground font-semibold shrink-0"
+              >
+                <Heart className="w-4 h-4 mr-2" />
+                Support this effort
+              </Button>
             </div>
-          )}
-
-          {/* Premium Status */}
-          {subscription.subscribed && (
-            <div className="glass-card rounded-xl p-6 mb-8 border border-gold/30">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <Crown className="w-5 h-5 text-gold" />
-                    <h3 className="font-semibold text-lg">Premium Active</h3>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Unlimited dreams, pattern analysis enabled.
-                    {subscription.subscriptionEnd && (
-                      <> Renews {format(new Date(subscription.subscriptionEnd), "MMM d, yyyy")}</>
-                    )}
-                  </p>
-                </div>
-                <Button
-                  variant="outline"
-                  onClick={handleManageSubscription}
-                  disabled={portalLoading}
-                  className="border-gold/30 hover:bg-gold/10 shrink-0"
-                >
-                  {portalLoading ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <>
-                      <ExternalLink className="w-4 h-4 mr-2" />
-                      Manage Subscription
-                    </>
-                  )}
-                </Button>
-              </div>
-            </div>
-          )}
+          </div>
 
           {/* New Dream Button */}
           <div className="mb-6">
             <Button
               onClick={() => navigate("/")}
-              disabled={!canAddMoreDreams}
               className="bg-gradient-gold hover:opacity-90 text-primary-foreground"
             >
               <Plus className="w-4 h-4 mr-2" />
               Interpret New Dream
             </Button>
-            {!canAddMoreDreams && (
-              <p className="text-sm text-muted-foreground mt-2">
-                Upgrade to Premium to add unlimited dreams
-              </p>
-            )}
           </div>
 
           {/* Dreams List */}
