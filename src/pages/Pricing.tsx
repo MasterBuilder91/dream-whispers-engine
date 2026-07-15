@@ -60,7 +60,7 @@ export default function Pricing() {
         <title>Pricing — BinSirin Premium | Unlimited Dream Interpretation</title>
         <meta
           name="description"
-          content="Free forever with 3 interpretations per month. Upgrade to BinSirin Premium for $4.99/mo — unlimited interpretations, shareable infographics, and trend analysis."
+          content="Try BinSirin free — 3 trial dream interpretations, no card required. Upgrade to Premium ($4.99/mo) for unlimited interpretations, shareable infographics, and trend analysis. Dictionary and journal always free."
         />
         <link rel="canonical" href="https://binsirin.com/pricing" />
       </Helmet>
