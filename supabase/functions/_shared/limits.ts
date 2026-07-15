@@ -175,8 +175,8 @@ export function limitResponse(result: LimitCheckResult, corsHeaders: Record<stri
       result.reason === "rate_limited"
         ? `Please wait ${result.retryAfterSeconds}s before your next dream.`
         : result.reason === "anon_limit"
-        ? "You've used your free interpretation for this month. Create a free account to get 3 per month."
-        : "You've reached your 3 free interpretations this month. Upgrade to Premium for unlimited access.",
+        ? "You've used your free preview. Create a free account to unlock 2 more trial interpretations."
+        : "Your free trial is complete. Upgrade to Premium for unlimited interpretations — the dictionary and journal stay free.",
     used: result.used,
     limit: result.limit,
     retry_after: result.retryAfterSeconds ?? null,
