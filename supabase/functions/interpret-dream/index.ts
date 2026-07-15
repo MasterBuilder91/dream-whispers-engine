@@ -98,16 +98,36 @@ Do NOT include: proper names, pronouns, connectors, or generic words.`
     });
 
     let searchTerms: string[] = [];
-    
+
+    // The extractor sometimes returns a plain string array, sometimes an array of
+    // objects like {english, arabic} or {symbol_en, symbol_ar}. If we forward
+    // objects into the ilike query they stringify to "[object Object]" and
+    // every search misses. Flatten to a clean string[] of individual terms.
+    const flattenSymbols = (raw: unknown): string[] => {
+      if (!Array.isArray(raw)) return [];
+      const out: string[] = [];
+      for (const item of raw) {
+        if (typeof item === "string") {
+          if (item.trim()) out.push(item.trim());
+        } else if (item && typeof item === "object") {
+          for (const v of Object.values(item as Record<string, unknown>)) {
+            if (typeof v === "string" && v.trim()) out.push(v.trim());
+          }
+        }
+      }
+      return Array.from(new Set(out)).filter(
+        (t) => t.length > 0 && t.length < 60 && !/[\{\}\[\]]/.test(t),
+      );
+    };
+
     if (symbolExtractionResponse.ok) {
       const symbolData = await symbolExtractionResponse.json();
       const symbolText = symbolData.choices?.[0]?.message?.content || "";
-      
-      // Parse the JSON array from the response
+
       const jsonMatch = symbolText.match(/\[[\s\S]*\]/);
       if (jsonMatch) {
         try {
-          searchTerms = JSON.parse(jsonMatch[0]);
+          searchTerms = flattenSymbols(JSON.parse(jsonMatch[0]));
           console.log("AI extracted symbols:", searchTerms);
         } catch {
           console.error("Failed to parse symbol JSON:", symbolText);
