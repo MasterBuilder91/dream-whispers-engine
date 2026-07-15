@@ -152,6 +152,39 @@ export type Database = {
         }
         Relationships: []
       }
+      symbol_translations: {
+        Row: {
+          created_at: string
+          id: string
+          interpretation: string
+          language: string
+          name: string
+          scholars: Json
+          summary: string
+          symbol_slug: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          interpretation: string
+          language: string
+          name: string
+          scholars: Json
+          summary: string
+          symbol_slug: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          interpretation?: string
+          language?: string
+          name?: string
+          scholars?: Json
+          summary?: string
+          symbol_slug?: string
+        }
+        Relationships: []
+      }
       usage_tracking: {
         Row: {
           count: number
