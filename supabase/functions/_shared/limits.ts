@@ -1,8 +1,11 @@
 // Shared usage-limit + subscription-gating helpers for BinSirin edge functions.
 import { createClient, SupabaseClient } from "npm:@supabase/supabase-js@2.57.2";
 
-export const FREE_MONTHLY_LIMIT = 3;
-export const ANON_MONTHLY_LIMIT = 1;
+// Lifetime free-trial caps. Anonymous visitors get 1 taste; signing up
+// unlocks 2 more (3 total lifetime). After that, Premium is required for
+// new interpretations. Dictionary + journal browsing stay free forever.
+export const FREE_TRIAL_LIMIT = 3;
+export const ANON_TRIAL_LIMIT = 1;
 export const RATE_LIMIT_SECONDS = 30;
 
 export interface AccessContext {
