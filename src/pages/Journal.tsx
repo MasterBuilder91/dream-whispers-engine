@@ -113,6 +113,11 @@ export default function Journal() {
             <h1 className="text-2xl sm:text-3xl font-serif text-gradient-gold mb-2">
               Your Dream Journal
             </h1>
+            <p className="text-muted-foreground">
+              {user?.email} • {dreams.length} dream{dreams.length !== 1 ? "s" : ""} recorded
+            </p>
+          </div>
+
           {/* Support banner */}
           <div className="glass-card rounded-xl p-6 mb-8 border border-gold/30">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
