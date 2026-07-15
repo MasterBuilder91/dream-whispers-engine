@@ -69,24 +69,27 @@ serve(async (req) => {
         messages: [
           { 
             role: "system", 
-            content: `You are a dream symbol extractor. Extract the key symbolic elements from dreams that would appear in classical Islamic dream interpretation books.
+            content: `You are a multilingual dream symbol extractor for a classical Islamic dream interpretation engine.
 
-Focus on:
-- Objects (water, snake, house, car, money, food, etc.)
-- Animals (dog, cat, bird, lion, etc.)
-- People types (father, mother, king, stranger, enemy, etc.)
-- Actions (flying, falling, running, fighting, crying, etc.)
-- Natural elements (sun, moon, rain, fire, sea, etc.)
-- Body parts (teeth, hair, hand, eye, etc.)
-- Emotions/states (death, marriage, pregnancy, fear, etc.)
+The dream may be written in ANY of these languages or dialects:
+- Modern Standard Arabic (فصحى) and ALL colloquial dialects: Egyptian (مصري), Levantine (شامي - Syrian, Lebanese, Palestinian, Jordanian), Gulf (خليجي - Saudi, Emirati, Kuwaiti, Qatari, Bahraini, Omani), Iraqi (عراقي), Maghrebi (مغربي - Moroccan Darija, Algerian, Tunisian, Libyan), Sudanese, Yemeni, Hassaniya
+- English
+- Urdu (اردو)
+- Somali (Af-Soomaali)
+- Swahili (Kiswahili)
+- Turkish (Türkçe)
+- Indonesian (Bahasa Indonesia)
+- Malay (Bahasa Melayu)
+- Spanish (Español)
 
-Return ONLY a JSON array of 3-8 symbol keywords in both English and Arabic where applicable.
+Understand slang, transliteration (Arabizi like "3ain", "7abibi"), and mixed-language input. Normalize dialectal words to their Modern Standard Arabic equivalent when extracting symbols (e.g. Egyptian "عربية" → "سيارة/car", Moroccan "طوموبيل" → "سيارة/car", Urdu "سانپ" → "snake/ثعبان", Turkish "yılan" → "snake/ثعبان", Swahili "nyoka" → "snake/ثعبان", Spanish "serpiente" → "snake/ثعبان").
+
+Extract 3-8 key symbolic elements (objects, animals, people-types, actions, natural elements, body parts, states).
+
+Return ONLY a JSON array of symbols in BOTH English AND Arabic (Modern Standard) for reliable searching against classical texts.
 Example: ["snake", "ثعبان", "water", "ماء", "father", "أب"]
 
-Do NOT include:
-- Proper names of people
-- Generic words (the, is, was, my, dreamt, saw)
-- Pronouns or connectors` 
+Do NOT include: proper names, pronouns, connectors, or generic words.` 
           },
           { role: "user", content: `Extract dream symbols from: "${dreamDescription}"` }
         ],
