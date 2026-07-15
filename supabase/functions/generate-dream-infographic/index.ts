@@ -157,17 +157,7 @@ serve(async (req) => {
       );
     }
 
-    // Infographic is a Premium feature (or admin). Free users see an upgrade prompt.
-    const access = await resolveAccess(req);
-    if (!access.isAdmin && !access.isPremium) {
-      return new Response(
-        JSON.stringify({
-          error: "premium_required",
-          message: "The dream infographic is a Premium feature.",
-        }),
-        { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-      );
-    }
+    // Free khidma — infographic available to all.
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
