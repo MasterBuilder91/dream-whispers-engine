@@ -259,7 +259,7 @@ If the items are already classical (snake, water, father), return them as-is.`
         const jsonMatch = conceptText.match(/\[[\s\S]*\]/);
         if (jsonMatch) {
           try {
-            const classicalSymbols = JSON.parse(jsonMatch[0]);
+            const classicalSymbols = flattenSymbols(JSON.parse(jsonMatch[0]));
             console.log("Conceptual mapping result:", classicalSymbols);
             
             // Search again with classical equivalents — both title AND content
