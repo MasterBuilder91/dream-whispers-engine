@@ -37,7 +37,7 @@ const faqJsonLd = {
       name: "Is BinSirin free to use?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "The free plan gives you 3 dream interpretations per month, the full A–Z symbol dictionary, and a small journal. Premium ($4.99/mo) unlocks unlimited interpretations, shareable dream infographics, full journaling, and monthly trend analysis.",
+        text: "You get 3 free trial interpretations (1 without signup, 2 more after creating a free account). The full A–Z symbol dictionary and a small journal stay free forever — you can keep learning about dreams and symbols any time. Premium ($4.99/mo) unlocks unlimited interpretations, shareable dream infographics, full journaling, and monthly trend analysis.",
       },
     },
   ],
