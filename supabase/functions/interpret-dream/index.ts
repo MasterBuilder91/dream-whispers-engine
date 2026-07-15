@@ -440,19 +440,13 @@ ${formattedEntries}`;
       ? dreamDescription  // For follow-ups, just send the user's question directly
       : `الرؤيا / Dream: ${dreamDescription}
 
-Please provide a comprehensive interpretation${hasBookContext ? " using the classical source texts provided" : ""}.
+Detect the language or Arabic dialect this dream was written in, then provide a comprehensive interpretation${hasBookContext ? " grounded in the classical source texts provided" : ""}.
 
-**Arabic Section (التفسير بالعربية):**
-- الرموز الرئيسية ومعانيها${hasBookContext ? " مع الاستشهاد بالنصوص" : ""}
-- التفسير الشامل
-- الاختلاف بين العلماء إن وجد
-- النصيحة الروحانية
+Output TWO sections following the language-handling rules in your system prompt:
 
-**English Section:**
-- Main symbols and their meanings${hasBookContext ? " with citations from the texts" : ""}
-- Comprehensive interpretation
-- Scholarly differences if any
-- Spiritual guidance`;
+1. **## التفسير العربي** — always in Modern Standard Arabic (فصحى): key symbols, comprehensive interpretation${hasBookContext ? " with citations from the texts", : ""} scholarly differences if any, and spiritual guidance.
+
+2. **## [Heading in the user's detected language]** — a complete parallel interpretation in the user's language (Urdu, Somali, Swahili, Turkish, Indonesian, Malay, Spanish, or English). Skip this second section ONLY if the user wrote in Arabic (any dialect).`;
 
     console.log(`Sending to AI with ${relevantEntries.length} source references, isFollowUp: ${isFollowUp}, history: ${conversationHistory.length} messages`);
 
