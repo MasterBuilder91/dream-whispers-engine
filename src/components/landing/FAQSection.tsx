@@ -25,7 +25,7 @@ export function FAQSection() {
     },
     {
       question: "Is this service free?",
-      answer: "The free plan gives you 3 dream interpretations per month, unlimited access to the A–Z symbol dictionary, and a small journal — no card required. Premium ($4.99/mo) unlocks unlimited interpretations, a shareable dream infographic for every dream, full journaling, and monthly trend analysis."
+      answer: "You get 3 free trial interpretations to experience the real thing — 1 as a visitor, 2 more after creating a free account. The A–Z symbol dictionary and a small journal stay free forever, so you can keep learning about dreams and symbols any time. Premium ($4.99/mo) unlocks unlimited interpretations, shareable dream infographics, full journaling, and monthly trend analysis."
     },
     {
       question: "What languages are supported?",

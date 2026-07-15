@@ -1,8 +1,11 @@
 // Shared usage-limit + subscription-gating helpers for BinSirin edge functions.
 import { createClient, SupabaseClient } from "npm:@supabase/supabase-js@2.57.2";
 
-export const FREE_MONTHLY_LIMIT = 3;
-export const ANON_MONTHLY_LIMIT = 1;
+// Lifetime free-trial caps. Anonymous visitors get 1 taste; signing up
+// unlocks 2 more (3 total lifetime). After that, Premium is required for
+// new interpretations. Dictionary + journal browsing stay free forever.
+export const FREE_TRIAL_LIMIT = 3;
+export const ANON_TRIAL_LIMIT = 1;
 export const RATE_LIMIT_SECONDS = 30;
 
 export interface AccessContext {
@@ -97,19 +100,22 @@ export async function checkLimit(ctx: AccessContext): Promise<LimitCheckResult> 
     return { allowed: true, used: 0, limit: Infinity };
   }
 
-  const month = currentMonthKey();
   const { service, userId, ipHash } = ctx;
 
-  const query = userId
-    ? service.from("usage_tracking").select("count, last_at").eq("user_id", userId).eq("month", month).maybeSingle()
-    : service.from("usage_tracking").select("count, last_at").is("user_id", null).eq("ip_hash", ipHash).eq("month", month).maybeSingle();
+  // Lifetime total across ALL months (trial model, not monthly reset).
+  const rowsQuery = userId
+    ? service.from("usage_tracking").select("count, last_at").eq("user_id", userId)
+    : service.from("usage_tracking").select("count, last_at").is("user_id", null).eq("ip_hash", ipHash);
 
-  const { data } = await query;
-  const used = data?.count ?? 0;
-  const limit = userId ? FREE_MONTHLY_LIMIT : ANON_MONTHLY_LIMIT;
+  const { data: rows } = await rowsQuery;
+  const used = (rows ?? []).reduce((sum, r: any) => sum + (r.count ?? 0), 0);
+  const lastAt = (rows ?? [])
+    .map((r: any) => (r.last_at ? new Date(r.last_at).getTime() : 0))
+    .reduce((max, t) => (t > max ? t : max), 0);
+  const limit = userId ? FREE_TRIAL_LIMIT : ANON_TRIAL_LIMIT;
 
-  if (data?.last_at) {
-    const elapsed = (Date.now() - new Date(data.last_at).getTime()) / 1000;
+  if (lastAt) {
+    const elapsed = (Date.now() - lastAt) / 1000;
     if (elapsed < RATE_LIMIT_SECONDS) {
       return {
         allowed: false,
@@ -169,8 +175,8 @@ export function limitResponse(result: LimitCheckResult, corsHeaders: Record<stri
       result.reason === "rate_limited"
         ? `Please wait ${result.retryAfterSeconds}s before your next dream.`
         : result.reason === "anon_limit"
-        ? "You've used your free interpretation for this month. Create a free account to get 3 per month."
-        : "You've reached your 3 free interpretations this month. Upgrade to Premium for unlimited access.",
+        ? "You've used your free preview. Create a free account to unlock 2 more trial interpretations."
+        : "Your free trial is complete. Upgrade to Premium for unlimited interpretations — the dictionary and journal stay free.",
     used: result.used,
     limit: result.limit,
     retry_after: result.retryAfterSeconds ?? null,
