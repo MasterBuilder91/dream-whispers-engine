@@ -147,15 +147,15 @@ const Index = () => {
                       {limitError.reason === "rate_limited"
                         ? "One moment…"
                         : limitError.reason === "anon_limit"
-                        ? "Create a free account to keep going"
-                        : "You've used your free interpretations this month"}
+                        ? "Create a free account to unlock 2 more"
+                        : "Your free trial is complete"}
                     </h3>
                     <p className="text-sm text-muted-foreground mb-4">{limitError.message}</p>
                     <div className="flex flex-wrap gap-2">
                       {limitError.reason === "anon_limit" && (
                         <Link to="/auth">
                           <Button className="bg-gradient-gold text-primary-foreground">
-                            Sign up free (3/month)
+                            Sign up free — 2 more interpretations
                           </Button>
                         </Link>
                       )}
@@ -166,6 +166,9 @@ const Index = () => {
                           </Button>
                         </Link>
                       )}
+                      <Link to="/dictionary">
+                        <Button variant="outline">Browse symbol dictionary (free)</Button>
+                      </Link>
                     </div>
                   </div>
                 </div>
