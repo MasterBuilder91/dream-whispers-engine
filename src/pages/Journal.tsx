@@ -94,12 +94,6 @@ export default function Journal() {
             </a>
 
             <div className="flex items-center gap-3">
-              {subscription.subscribed && (
-                <span className="hidden sm:flex items-center gap-1 px-3 py-1 rounded-full bg-gold/20 text-gold text-sm">
-                  <Crown className="w-3.5 h-3.5" />
-                  Premium
-                </span>
-              )}
               <Button
                 variant="ghost"
                 size="sm"
@@ -119,93 +113,37 @@ export default function Journal() {
             <h1 className="text-2xl sm:text-3xl font-serif text-gradient-gold mb-2">
               Your Dream Journal
             </h1>
-            <p className="text-muted-foreground">
-              {user?.email} • {dreams.length} dream{dreams.length !== 1 ? "s" : ""} recorded
-            </p>
+          {/* Support banner */}
+          <div className="glass-card rounded-xl p-6 mb-8 border border-gold/30">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <Heart className="w-5 h-5 text-gold" />
+                  <h3 className="font-semibold text-lg">A free Islamic khidma</h3>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  BinSirin is offered freely, seeking only the pleasure of Allah. Your support keeps it running for the ummah.
+                </p>
+              </div>
+              <Button
+                onClick={() => navigate("/support")}
+                className="bg-gradient-gold hover:opacity-90 text-primary-foreground font-semibold shrink-0"
+              >
+                <Heart className="w-4 h-4 mr-2" />
+                Support this effort
+              </Button>
+            </div>
           </div>
-
-          {/* Subscription Banner */}
-          {!subscription.subscribed && (
-            <div className="glass-card rounded-xl p-6 mb-8 border border-gold/30">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <Crown className="w-5 h-5 text-gold" />
-                    <h3 className="font-semibold text-lg">Upgrade to Premium</h3>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Unlimited dreams, pattern analysis, and full classical text access.{" "}
-                    <span className="text-gold">{FREE_DREAM_LIMIT - dreams.length} free entries remaining.</span>
-                  </p>
-                </div>
-                <Button
-                  onClick={handleUpgrade}
-                  disabled={checkoutLoading}
-                  className="bg-gradient-gold hover:opacity-90 text-primary-foreground font-semibold shrink-0"
-                >
-                  {checkoutLoading ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <>
-                      <Crown className="w-4 h-4 mr-2" />
-                      {SUBSCRIPTION_TIERS.premium.price}
-                    </>
-                  )}
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {/* Premium Status */}
-          {subscription.subscribed && (
-            <div className="glass-card rounded-xl p-6 mb-8 border border-gold/30">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <Crown className="w-5 h-5 text-gold" />
-                    <h3 className="font-semibold text-lg">Premium Active</h3>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Unlimited dreams, pattern analysis enabled.
-                    {subscription.subscriptionEnd && (
-                      <> Renews {format(new Date(subscription.subscriptionEnd), "MMM d, yyyy")}</>
-                    )}
-                  </p>
-                </div>
-                <Button
-                  variant="outline"
-                  onClick={handleManageSubscription}
-                  disabled={portalLoading}
-                  className="border-gold/30 hover:bg-gold/10 shrink-0"
-                >
-                  {portalLoading ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <>
-                      <ExternalLink className="w-4 h-4 mr-2" />
-                      Manage Subscription
-                    </>
-                  )}
-                </Button>
-              </div>
-            </div>
-          )}
 
           {/* New Dream Button */}
           <div className="mb-6">
             <Button
               onClick={() => navigate("/")}
-              disabled={!canAddMoreDreams}
               className="bg-gradient-gold hover:opacity-90 text-primary-foreground"
             >
               <Plus className="w-4 h-4 mr-2" />
               Interpret New Dream
             </Button>
-            {!canAddMoreDreams && (
-              <p className="text-sm text-muted-foreground mt-2">
-                Upgrade to Premium to add unlimited dreams
-              </p>
-            )}
           </div>
 
           {/* Dreams List */}
