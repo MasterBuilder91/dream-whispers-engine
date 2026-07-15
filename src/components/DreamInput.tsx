@@ -64,10 +64,18 @@ export function DreamInput({ onSubmit, isLoading, disabled, disabledMessage }: D
               جاري التفسير... Interpreting...
             </span>
           ) : (
-            <span className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleSubmit}
+              disabled={!dream.trim()}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-gold/10 active:bg-gold/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               <Sparkles className="w-4 h-4 text-gold" />
-              <span className="font-medium">Press Enter ↵ to start interpretation</span>
-            </span>
+              <span className="font-medium">
+                <span className="hidden sm:inline">Press Enter ↵ or tap to interpret</span>
+                <span className="sm:hidden">Tap to interpret</span>
+              </span>
+            </button>
           )}
         </div>
       </div>
