@@ -58,7 +58,7 @@ const organizationJsonLd = {
 const Index = () => {
   const interpretSectionRef = useRef<HTMLDivElement>(null);
   const { subscription, user } = useAuth();
-  const isPremium = subscription.subscribed || subscription.isAdmin;
+  const isPremium = true; // BinSirin is a free khidma — every feature is open.
   const {
     interpretation,
     isLoading,
@@ -68,7 +68,7 @@ const Index = () => {
     limitError,
     interpretDream,
     reset,
-  } = useInterpretDream({ canUseInfographic: isPremium });
+  } = useInterpretDream({ canUseInfographic: true });
 
   const handleDreamSubmit = (dream: string) => {
     interpretDream(dream);
