@@ -444,7 +444,7 @@ Detect the language or Arabic dialect this dream was written in, then provide a 
 
 Output TWO sections following the language-handling rules in your system prompt:
 
-1. **## التفسير العربي** — always in Modern Standard Arabic (فصحى): key symbols, comprehensive interpretation${hasBookContext ? " with citations from the texts", : ""} scholarly differences if any, and spiritual guidance.
+1. **## التفسير العربي** — always in Modern Standard Arabic (فصحى): key symbols, comprehensive interpretation${hasBookContext ? " with citations from the texts" : ""}, scholarly differences if any, and spiritual guidance.
 
 2. **## [Heading in the user's detected language]** — a complete parallel interpretation in the user's language (Urdu, Somali, Swahili, Turkish, Indonesian, Malay, Spanish, or English). Skip this second section ONLY if the user wrote in Arabic (any dialect).`;
 
