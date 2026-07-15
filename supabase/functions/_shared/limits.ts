@@ -1,11 +1,10 @@
 // Shared usage-limit + subscription-gating helpers for BinSirin edge functions.
 import { createClient, SupabaseClient } from "npm:@supabase/supabase-js@2.57.2";
 
-// Lifetime free-trial caps. Anonymous visitors get 1 taste; signing up
-// unlocks 2 more (3 total lifetime). After that, Premium is required for
-// new interpretations. Dictionary + journal browsing stay free forever.
-export const FREE_TRIAL_LIMIT = 3;
-export const ANON_TRIAL_LIMIT = 1;
+// BinSirin is a free Islamic khidma — no paywall. We keep only a light
+// rate limit to prevent abuse. Limits are effectively unlimited.
+export const FREE_TRIAL_LIMIT = Number.POSITIVE_INFINITY;
+export const ANON_TRIAL_LIMIT = Number.POSITIVE_INFINITY;
 export const RATE_LIMIT_SECONDS = 30;
 
 export interface AccessContext {
