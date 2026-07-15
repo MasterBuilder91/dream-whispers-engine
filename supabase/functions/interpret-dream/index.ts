@@ -413,10 +413,11 @@ CONVERSATIONAL STYLE:
 Remember: نصف العلم أن تقول لا أعلم — Half of knowledge is saying "I don't know."
 
 ═══════════════════════════════════════
-CLASSICAL SOURCE TEXTS (USE ONLY THESE):
+CLASSICAL SOURCE TEXTS:
 ═══════════════════════════════════════
 
-${formattedEntries}`;
+${hasBookContext ? formattedEntries : "(No direct passage was retrieved from the reference database for this dream. Interpret from your deep internalized knowledge of Ibn Sirin and Al-Nabulsi's tradition. Stay strictly within classical Islamic dream interpretation — no psychology, numerology, astrology, or invented meanings. Do NOT refuse. Do NOT tell the user to rephrase or use simpler terms. Attribute reasoning to the scholars' tradition rather than fabricating specific quotes.)"}`;
+
 
     // Build user prompt based on whether this is a follow-up
     const userPrompt = isFollowUp 
