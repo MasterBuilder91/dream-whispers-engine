@@ -1,4 +1,4 @@
-import { XCircle, CheckCircle, AlertTriangle, BookOpen, Quote, Eye, Link2 } from "lucide-react";
+import { XCircle, CheckCircle, AlertTriangle, BookOpen, Quote, Eye, Link2, GraduationCap, Cpu, Database } from "lucide-react";
 
 export function DifferentiatorSection() {
   return (
