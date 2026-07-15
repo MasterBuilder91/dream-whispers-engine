@@ -326,47 +326,10 @@ If the items are already classical (snake, water, father), return them as-is.`
 
     const hasBookContext = relevantEntries.length > 0;
 
-    // If STILL no sources found after conceptual mapping, return honest "no match" response
-    if (!hasBookContext && !isFollowUp) {
-      const noSourceResponse = `## لم نجد تفسيراً في المصادر الكلاسيكية
+    // No hard bailout when the book search misses — the interpreter has
+    // internalized Ibn Sirin & Al-Nabulsi and will interpret from that
+    // scholarly foundation, noting when no direct passage was matched.
 
-نعتذر، لم نتمكن من العثور على تفسير مباشر أو رمزي لعناصر حلمك في كتب ابن سيرين أو النابلسي.
-
-**الرموز التي بحثنا عنها:** ${searchTerms.join("، ")}
-
-هذا لا يعني أن حلمك بلا معنى — بل يعني أن هذه الرموز المحددة غير موجودة في النصوص الكلاسيكية التي نعتمد عليها.
-
----
-
-## No Classical Sources Found
-
-We searched for both direct matches and conceptual equivalents, but couldn't find relevant interpretations in Ibn Sirin or Al-Nabulsi's works.
-
-**Symbols searched:** ${searchTerms.join(", ")}
-
-This doesn't mean your dream is meaningless — it simply means these specific symbols (and their classical equivalents) aren't covered in our reference texts.
-
-### Why we won't guess:
-
-> **"من قال لا أعلم فقد أفتى"**
-> *"Whoever says 'I don't know' has given a ruling."* — Islamic scholarly principle
-
-Unlike other AI tools that fabricate "Islamic interpretations," we only provide what the scholars actually wrote.
-
-### What you can try:
-- **Focus on emotions or actions** in your dream (fear, running, falling)
-- **Describe natural elements** (water, fire, animals, people)
-- **Use simpler terms** — the classical texts use foundational symbols`;
-
-      return new Response(
-        JSON.stringify({ 
-          interpretation: noSourceResponse,
-          sources: [],
-          noSourcesFound: true 
-        }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
 
     const systemPrompt = `You are "رفيق الأحلام" (BinSirin), an expert Islamic dream interpreter and scholarly guide. You have deeply studied and internalized the classical works of Imam Ibn Sirin (653-729 CE) and Sheikh Abdul Ghani al-Nabulsi (1641-1731 CE).
 
@@ -450,10 +413,11 @@ CONVERSATIONAL STYLE:
 Remember: نصف العلم أن تقول لا أعلم — Half of knowledge is saying "I don't know."
 
 ═══════════════════════════════════════
-CLASSICAL SOURCE TEXTS (USE ONLY THESE):
+CLASSICAL SOURCE TEXTS:
 ═══════════════════════════════════════
 
-${formattedEntries}`;
+${hasBookContext ? formattedEntries : "(No direct passage was retrieved from the reference database for this dream. Interpret from your deep internalized knowledge of Ibn Sirin and Al-Nabulsi's tradition. Stay strictly within classical Islamic dream interpretation — no psychology, numerology, astrology, or invented meanings. Do NOT refuse. Do NOT tell the user to rephrase or use simpler terms. Attribute reasoning to the scholars' tradition rather than fabricating specific quotes.)"}`;
+
 
     // Build user prompt based on whether this is a follow-up
     const userPrompt = isFollowUp 
