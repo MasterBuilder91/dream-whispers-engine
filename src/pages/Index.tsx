@@ -257,11 +257,16 @@ const Index = () => {
                 </p>
               </div>
             </div>
-            
-            <div className="mt-8 pt-6 border-t border-border text-center">
+
+            <div className="mt-8 pt-6 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4 text-center">
+              <nav className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-muted-foreground">
+                <a href="/dictionary" className="hover:text-gold transition-colors">Symbol Dictionary</a>
+                <a href="/journal" className="hover:text-gold transition-colors">Dream Journal</a>
+                <a href="/pricing" className="hover:text-gold transition-colors">Pricing</a>
+                <a href="/install" className="hover:text-gold transition-colors font-medium text-gold/80">📱 Install App</a>
+              </nav>
               <p className="text-xs text-muted-foreground/50">
-                © {new Date().getFullYear()} BinSirin. 
-                All interpretations grounded in and cited from classical scholarly texts.
+                © {new Date().getFullYear()} BinSirin. Cited from classical scholarly texts.
               </p>
             </div>
           </div>
