@@ -1,17 +1,25 @@
 {
-  "name": "BinSirin - رفيق الأحلام",
+  "name": "BinSirin — Islamic Dream Interpretation",
   "short_name": "BinSirin",
-  "description": "Authentic dream interpretation powered by classical texts from Ibn Sirin & Al-Nabulsi",
+  "description": "Authentic dream interpretation grounded in classical texts by Ibn Sirin & Al-Nabulsi.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#0a0a12",
   "theme_color": "#0a0a12",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/favicon.ico",
-      "sizes": "64x64",
-      "type": "image/x-icon"
+      "src": "/pwa-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/pwa-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
