@@ -25,7 +25,7 @@ export function FAQSection() {
     },
     {
       question: "Is this service free?",
-      answer: "You get 3 free trial interpretations to experience the real thing — 1 as a visitor, 2 more after creating a free account. The A–Z symbol dictionary and a small journal stay free forever, so you can keep learning about dreams and symbols any time. Premium ($4.99/mo) unlocks unlimited interpretations, shareable dream infographics, full journaling, and monthly trend analysis."
+      answer: "Yes — BinSirin is offered completely free as an Islamic khidma (service), seeking only the pleasure of Allah. Every feature — interpretations, the A–Z dictionary, and the dream journal — is open to everyone. If the tool benefits you, please consider supporting the effort so it continues and grows for the ummah."
     },
     {
       question: "What languages are supported?",

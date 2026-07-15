@@ -37,7 +37,7 @@ const faqJsonLd = {
       name: "Is BinSirin free to use?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "You get 3 free trial interpretations (1 without signup, 2 more after creating a free account). The full A–Z symbol dictionary and a small journal stay free forever — you can keep learning about dreams and symbols any time. Premium ($4.99/mo) unlocks unlimited interpretations, shareable dream infographics, full journaling, and monthly trend analysis.",
+        text: "Yes — BinSirin is offered freely as an Islamic khidma (service), seeking only the pleasure of Allah. There is no paywall on interpretations, the dictionary, or the journal. If it benefits you, please consider supporting the effort so it continues and grows.",
       },
     },
   ],
@@ -100,8 +100,8 @@ const Index = () => {
             <a href="/dictionary" className="text-muted-foreground hover:text-gold transition-colors">
               Dictionary
             </a>
-            <Link to="/pricing" className="text-muted-foreground hover:text-gold transition-colors">
-              Pricing
+            <Link to="/support" className="text-muted-foreground hover:text-gold transition-colors">
+              Support
             </Link>
             <a href="#faq" className="text-muted-foreground hover:text-gold transition-colors">
               FAQ
@@ -138,38 +138,13 @@ const Index = () => {
               disabled={!!limitError}
             />
 
-            {limitError && (
+            {limitError && limitError.reason === "rate_limited" && (
               <div className="w-full max-w-3xl mx-auto mt-6 dream-card rounded-2xl p-6 border border-gold/30">
                 <div className="flex items-start gap-3">
                   <Lock className="w-5 h-5 text-gold flex-shrink-0 mt-0.5" />
                   <div className="flex-1">
-                    <h3 className="font-serif text-lg text-gold mb-1">
-                      {limitError.reason === "rate_limited"
-                        ? "One moment…"
-                        : limitError.reason === "anon_limit"
-                        ? "Create a free account to unlock 2 more"
-                        : "Your free trial is complete"}
-                    </h3>
-                    <p className="text-sm text-muted-foreground mb-4">{limitError.message}</p>
-                    <div className="flex flex-wrap gap-2">
-                      {limitError.reason === "anon_limit" && (
-                        <Link to="/auth">
-                          <Button className="bg-gradient-gold text-primary-foreground">
-                            Sign up free — 2 more interpretations
-                          </Button>
-                        </Link>
-                      )}
-                      {limitError.reason === "monthly_limit" && (
-                        <Link to="/pricing">
-                          <Button className="bg-gradient-gold text-primary-foreground">
-                            <Sparkles className="w-4 h-4 mr-2" /> Upgrade to Premium — Unlimited
-                          </Button>
-                        </Link>
-                      )}
-                      <Link to="/dictionary">
-                        <Button variant="outline">Browse symbol dictionary (free)</Button>
-                      </Link>
-                    </div>
+                    <h3 className="font-serif text-lg text-gold mb-1">One moment…</h3>
+                    <p className="text-sm text-muted-foreground">{limitError.message}</p>
                   </div>
                 </div>
               </div>
@@ -181,28 +156,26 @@ const Index = () => {
               sources={sources}
             />
 
-            {isPremium ? (
-              <DreamInfographic
-                imageUrl={infographicUrl}
-                isGenerating={isGeneratingInfographic}
-              />
-            ) : (
-              interpretation && !isLoading && (
-                <div className="w-full max-w-3xl mx-auto mt-6 dream-card rounded-2xl p-6 text-center border-dashed border border-gold/30">
-                  <Sparkles className="w-8 h-8 text-gold mx-auto mb-3" />
-                  <h3 className="font-serif text-xl text-gradient-gold mb-2">
-                    See this dream as an illuminated infographic
-                  </h3>
-                  <p className="text-sm text-muted-foreground mb-4 max-w-md mx-auto">
-                    Premium members get a shareable, manuscript-style visual for every dream — plus unlimited interpretations.
-                  </p>
-                  <Link to="/pricing">
-                    <Button className="bg-gradient-gold text-primary-foreground">
-                      Upgrade to Premium — $4.99/mo
-                    </Button>
-                  </Link>
-                </div>
-              )
+            <DreamInfographic
+              imageUrl={infographicUrl}
+              isGenerating={isGeneratingInfographic}
+            />
+
+            {interpretation && !isLoading && (
+              <div className="w-full max-w-3xl mx-auto mt-6 dream-card rounded-2xl p-6 text-center border-dashed border border-gold/30">
+                <Sparkles className="w-8 h-8 text-gold mx-auto mb-3" />
+                <h3 className="font-serif text-xl text-gradient-gold mb-2">
+                  This is a free Islamic khidma
+                </h3>
+                <p className="text-sm text-muted-foreground mb-4 max-w-md mx-auto">
+                  BinSirin is offered freely, seeking only the pleasure of Allah. Your support keeps it running and growing for the ummah.
+                </p>
+                <Link to="/support">
+                  <Button className="bg-gradient-gold text-primary-foreground">
+                    Support this effort
+                  </Button>
+                </Link>
+              </div>
             )}
 
             {interpretation && !isLoading && (
@@ -262,7 +235,7 @@ const Index = () => {
               <nav className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-muted-foreground">
                 <a href="/dictionary" className="hover:text-gold transition-colors">Symbol Dictionary</a>
                 <a href="/journal" className="hover:text-gold transition-colors">Dream Journal</a>
-                <a href="/pricing" className="hover:text-gold transition-colors">Pricing</a>
+                <a href="/support" className="hover:text-gold transition-colors">Support this effort</a>
                 <a href="/install" className="hover:text-gold transition-colors font-medium text-gold/80">📱 Install App</a>
               </nav>
               <p className="text-xs text-muted-foreground/50">
