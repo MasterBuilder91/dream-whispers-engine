@@ -44,7 +44,7 @@ export function DreamInput({ onSubmit, isLoading, disabled, disabledMessage }: D
             value={dream}
             onChange={(e) => setDream(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="اكتب تفاصيل حلمك هنا... / Describe your dream here..."
+            placeholder="اكتب حلمك بأي لهجة عربية · Describe your dream · اپنا خواب لکھیں · Riyadaada qor · Andika ndoto yako · Rüyanı yaz · Tulis mimpi Anda · Describe tu sueño..."
             className="min-h-[140px] sm:min-h-[180px] bg-secondary/30 border-border/50 resize-none text-base sm:text-lg leading-relaxed placeholder:text-muted-foreground/50 focus:ring-2 focus:ring-gold/30 focus:border-gold/50 transition-all rounded-xl"
             dir="auto"
             enterKeyHint="send"

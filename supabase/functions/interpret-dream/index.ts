@@ -69,24 +69,27 @@ serve(async (req) => {
         messages: [
           { 
             role: "system", 
-            content: `You are a dream symbol extractor. Extract the key symbolic elements from dreams that would appear in classical Islamic dream interpretation books.
+            content: `You are a multilingual dream symbol extractor for a classical Islamic dream interpretation engine.
 
-Focus on:
-- Objects (water, snake, house, car, money, food, etc.)
-- Animals (dog, cat, bird, lion, etc.)
-- People types (father, mother, king, stranger, enemy, etc.)
-- Actions (flying, falling, running, fighting, crying, etc.)
-- Natural elements (sun, moon, rain, fire, sea, etc.)
-- Body parts (teeth, hair, hand, eye, etc.)
-- Emotions/states (death, marriage, pregnancy, fear, etc.)
+The dream may be written in ANY of these languages or dialects:
+- Modern Standard Arabic (فصحى) and ALL colloquial dialects: Egyptian (مصري), Levantine (شامي - Syrian, Lebanese, Palestinian, Jordanian), Gulf (خليجي - Saudi, Emirati, Kuwaiti, Qatari, Bahraini, Omani), Iraqi (عراقي), Maghrebi (مغربي - Moroccan Darija, Algerian, Tunisian, Libyan), Sudanese, Yemeni, Hassaniya
+- English
+- Urdu (اردو)
+- Somali (Af-Soomaali)
+- Swahili (Kiswahili)
+- Turkish (Türkçe)
+- Indonesian (Bahasa Indonesia)
+- Malay (Bahasa Melayu)
+- Spanish (Español)
 
-Return ONLY a JSON array of 3-8 symbol keywords in both English and Arabic where applicable.
+Understand slang, transliteration (Arabizi like "3ain", "7abibi"), and mixed-language input. Normalize dialectal words to their Modern Standard Arabic equivalent when extracting symbols (e.g. Egyptian "عربية" → "سيارة/car", Moroccan "طوموبيل" → "سيارة/car", Urdu "سانپ" → "snake/ثعبان", Turkish "yılan" → "snake/ثعبان", Swahili "nyoka" → "snake/ثعبان", Spanish "serpiente" → "snake/ثعبان").
+
+Extract 3-8 key symbolic elements (objects, animals, people-types, actions, natural elements, body parts, states).
+
+Return ONLY a JSON array of symbols in BOTH English AND Arabic (Modern Standard) for reliable searching against classical texts.
 Example: ["snake", "ثعبان", "water", "ماء", "father", "أب"]
 
-Do NOT include:
-- Proper names of people
-- Generic words (the, is, was, my, dreamt, saw)
-- Pronouns or connectors` 
+Do NOT include: proper names, pronouns, connectors, or generic words.` 
           },
           { role: "user", content: `Extract dream symbols from: "${dreamDescription}"` }
         ],
@@ -391,23 +394,32 @@ The user is continuing to explore their dream. They have already received an int
 - If they ask about something not in your sources, honestly say the classical texts don't address it
 - Be conversational but maintain scholarly depth
 ` : `
-INITIAL INTERPRETATION FORMAT:
-Provide a comprehensive interpretation in BOTH Arabic AND English:
+INITIAL INTERPRETATION FORMAT — LANGUAGE HANDLING:
+
+The dream may arrive in any of these languages or dialects: Modern Standard Arabic AND all colloquial dialects (Egyptian, Levantine, Gulf, Iraqi, Maghrebi/Darija, Sudanese, Yemeni, Hassaniya), English, Urdu, Somali, Swahili, Turkish, Indonesian, Malay, Spanish.
+
+1. DETECT the primary language/dialect the user wrote in.
+2. ALWAYS include a full Arabic (فصحى) interpretation — the sources are Arabic and this preserves scholarly authority.
+3. ALSO include a full interpretation in the user's detected language when it is not Arabic. Write it in the standard form of that language.
+4. If the user wrote in a colloquial Arabic dialect, still write the interpretation in Modern Standard Arabic, but briefly acknowledge the dialect ("فهمت لهجتك المصرية / الشامية / المغربية...").
+5. If the user wrote in English, output Arabic section + English section (as before).
+
+Use this structure. Replace "[User Language]" with the actual localized heading (examples: "اردو تعبیر", "Fasiraadda Af-Soomaali", "Tafsiri kwa Kiswahili", "Türkçe Yorum", "Tafsir Bahasa Indonesia", "Tafsir Bahasa Melayu", "Interpretación en Español", "English Interpretation"):
 
 ## التفسير العربي
 
-[Full interpretation in eloquent Arabic with proper Islamic terminology. Quote classical texts with attribution. Explain symbols clearly.]
+[Full interpretation in eloquent Modern Standard Arabic with proper Islamic terminology. Quote classical texts with attribution.]
 
-## English Interpretation
+## [User Language Heading]
 
-[Complete interpretation in clear English. Reference the classical sources. Make the scholarly wisdom accessible.]
+[Complete interpretation in the user's language. Reference the classical Arabic sources by name (Ibn Sirin / ابن سيرين, Al-Nabulsi / النابلسي). Keep transliterated Arabic terms where meaningful (ru'ya, ta'bir) followed by translation.]
 
-STRUCTURE YOUR INTERPRETATION:
-1. **Key Symbols (الرموز الرئيسية)**: Identify and explain each major symbol FROM THE PROVIDED SOURCES
-2. **Classical References**: Quote the provided texts with attribution (e.g., "Ibn Sirin writes...")
-3. **Interconnections**: How do the symbols relate to each other in this dream?
+STRUCTURE (apply to both sections):
+1. **Key Symbols**: Identify and explain each major symbol FROM THE PROVIDED SOURCES
+2. **Classical References**: Quote the provided Arabic texts with attribution
+3. **Interconnections**: How the symbols relate to each other in this dream
 4. **Scholarly Nuances**: Note if Ibn Sirin and Al-Nabulsi differ
-5. **Personal Guidance**: What might this mean for the dreamer based on what the sources say?
+5. **Personal Guidance**: What this might mean for the dreamer based on the sources
 `}
 
 CONVERSATIONAL STYLE:
@@ -428,19 +440,13 @@ ${formattedEntries}`;
       ? dreamDescription  // For follow-ups, just send the user's question directly
       : `الرؤيا / Dream: ${dreamDescription}
 
-Please provide a comprehensive interpretation${hasBookContext ? " using the classical source texts provided" : ""}.
+Detect the language or Arabic dialect this dream was written in, then provide a comprehensive interpretation${hasBookContext ? " grounded in the classical source texts provided" : ""}.
 
-**Arabic Section (التفسير بالعربية):**
-- الرموز الرئيسية ومعانيها${hasBookContext ? " مع الاستشهاد بالنصوص" : ""}
-- التفسير الشامل
-- الاختلاف بين العلماء إن وجد
-- النصيحة الروحانية
+Output TWO sections following the language-handling rules in your system prompt:
 
-**English Section:**
-- Main symbols and their meanings${hasBookContext ? " with citations from the texts" : ""}
-- Comprehensive interpretation
-- Scholarly differences if any
-- Spiritual guidance`;
+1. **## التفسير العربي** — always in Modern Standard Arabic (فصحى): key symbols, comprehensive interpretation${hasBookContext ? " with citations from the texts" : ""}, scholarly differences if any, and spiritual guidance.
+
+2. **## [Heading in the user's detected language]** — a complete parallel interpretation in the user's language (Urdu, Somali, Swahili, Turkish, Indonesian, Malay, Spanish, or English). Skip this second section ONLY if the user wrote in Arabic (any dialect).`;
 
     console.log(`Sending to AI with ${relevantEntries.length} source references, isFollowUp: ${isFollowUp}, history: ${conversationHistory.length} messages`);
 

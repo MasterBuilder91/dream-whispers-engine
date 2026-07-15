@@ -29,7 +29,7 @@ export function FAQSection() {
     },
     {
       question: "What languages are supported?",
-      answer: "The interface supports both English and Arabic. Interpretations are presented bilingually where available, honoring both the original Arabic texts and making them accessible to English speakers."
+      answer: "Write your dream in Modern Standard Arabic OR any colloquial Arabic dialect — Egyptian, Levantine (Syrian, Lebanese, Palestinian, Jordanian), Gulf (Saudi, Emirati, Kuwaiti, Qatari), Iraqi, Maghrebi (Moroccan Darija, Algerian, Tunisian), Sudanese, Yemeni. You can also write in English, Urdu, Somali, Swahili, Turkish, Indonesian, Malay, or Spanish. Every interpretation is returned in both Modern Standard Arabic (فصحى) — preserving the original scholarly authority — and in your own language, so you can read the classical wisdom in the way you actually speak."
     },
     {
       question: "Who were Ibn Sirin and Al-Nabulsi?",
