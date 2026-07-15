@@ -8,10 +8,10 @@ import { toast } from "sonner";
 import { useState } from "react";
 
 const freePerks = [
-  "3 dream interpretations per month",
-  "Full sourced answers from Ibn Sirin & Al-Nabulsi",
+  "3 free trial interpretations (lifetime)",
+  "Sourced answers from Ibn Sirin & Al-Nabulsi",
   "Arabic + English, every response cited",
-  "Unlimited A–Z symbol dictionary",
+  "Unlimited A–Z symbol dictionary — browse forever",
   "Save your last 5 dreams",
 ];
 
