@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { Moon, Stars, Plus, Crown, LogOut, Loader2, BookOpen, Calendar, Trash2, ExternalLink } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Moon, Plus, LogOut, Loader2, BookOpen, Calendar, Trash2, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useAuth, SUBSCRIPTION_TIERS } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -17,30 +17,11 @@ interface DreamEntry {
   created_at: string;
 }
 
-const FREE_DREAM_LIMIT = 5;
-
 export default function Journal() {
-  const { user, loading: authLoading, subscription, signOut, refreshSubscription } = useAuth();
+  const { user, loading: authLoading, signOut } = useAuth();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const [dreams, setDreams] = useState<DreamEntry[]>([]);
   const [loading, setLoading] = useState(true);
-  const [checkoutLoading, setCheckoutLoading] = useState(false);
-  const [portalLoading, setPortalLoading] = useState(false);
-
-  // Handle checkout redirect
-  useEffect(() => {
-    const checkout = searchParams.get("checkout");
-    if (checkout === "success") {
-      toast.success("Welcome to Premium! Refreshing your subscription status...");
-      refreshSubscription();
-      // Clean URL
-      navigate("/journal", { replace: true });
-    } else if (checkout === "canceled") {
-      toast.info("Checkout canceled. You can upgrade anytime.");
-      navigate("/journal", { replace: true });
-    }
-  }, [searchParams, navigate, refreshSubscription]);
 
   // Redirect if not logged in
   useEffect(() => {
@@ -53,7 +34,7 @@ export default function Journal() {
   useEffect(() => {
     async function fetchDreams() {
       if (!user) return;
-      
+
       try {
         const { data, error } = await supabase
           .from("user_dreams")
@@ -74,38 +55,6 @@ export default function Journal() {
     fetchDreams();
   }, [user]);
 
-  const handleUpgrade = async () => {
-    setCheckoutLoading(true);
-    try {
-      const { data, error } = await supabase.functions.invoke("create-checkout");
-      if (error) throw error;
-      if (data?.url) {
-        window.open(data.url, "_blank");
-      }
-    } catch (error) {
-      console.error("Checkout error:", error);
-      toast.error("Failed to start checkout. Please try again.");
-    } finally {
-      setCheckoutLoading(false);
-    }
-  };
-
-  const handleManageSubscription = async () => {
-    setPortalLoading(true);
-    try {
-      const { data, error } = await supabase.functions.invoke("customer-portal");
-      if (error) throw error;
-      if (data?.url) {
-        window.open(data.url, "_blank");
-      }
-    } catch (error) {
-      console.error("Portal error:", error);
-      toast.error("Failed to open subscription management. Please try again.");
-    } finally {
-      setPortalLoading(false);
-    }
-  };
-
   const handleDeleteDream = async (id: string) => {
     try {
       const { error } = await supabase
@@ -122,7 +71,6 @@ export default function Journal() {
     }
   };
 
-  const canAddMoreDreams = subscription.subscribed || dreams.length < FREE_DREAM_LIMIT;
 
   if (authLoading) {
     return (
