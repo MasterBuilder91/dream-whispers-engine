@@ -1,0 +1,26 @@
+[build]
+  command = "node scripts/build-db-index.mjs && vite build"
+  publish = "dist"
+
+# Set GEMINI_API_KEY in Netlify → Site settings → Environment variables
+# Never commit the key to this file or to any source file.
+
+[[edge_functions]]
+  path = "/api/interpret-dream"
+  function = "interpret-dream"
+
+[[edge_functions]]
+  path = "/api/generate-infographic"
+  function = "generate-infographic"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[headers]]
+  for = "/databases/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

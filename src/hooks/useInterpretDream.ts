@@ -1,9 +1,8 @@
 import { useState, useCallback } from "react";
 import { toast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 
-const INTERPRET_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/interpret-dream`;
-const INFOGRAPHIC_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-dream-infographic`;
+const INTERPRET_URL = "/api/interpret-dream";
+const INFOGRAPHIC_URL = "/api/generate-infographic";
 
 export interface SourceCitation {
   title: string;
@@ -35,12 +34,6 @@ interface UseInterpretDreamReturn {
   reset: () => void;
 }
 
-async function authHeader(): Promise<string> {
-  const { data } = await supabase.auth.getSession();
-  const token = data.session?.access_token ?? import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-  return `Bearer ${token}`;
-}
-
 export function useInterpretDream(options: UseInterpretDreamOptions = {}): UseInterpretDreamReturn {
   const { canUseInfographic = false } = options;
   const [interpretation, setInterpretation] = useState("");
@@ -63,10 +56,7 @@ export function useInterpretDream(options: UseInterpretDreamOptions = {}): UseIn
     try {
       const response = await fetch(INFOGRAPHIC_URL, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: await authHeader(),
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ dreamDescription, interpretation: interpretationText }),
       });
 
@@ -97,10 +87,7 @@ export function useInterpretDream(options: UseInterpretDreamOptions = {}): UseIn
     try {
       const response = await fetch(INTERPRET_URL, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: await authHeader(),
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ dreamDescription }),
       });
 

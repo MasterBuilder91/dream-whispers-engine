@@ -8,7 +8,6 @@ import { DreamInput } from "@/components/DreamInput";
 import { InterpretationResult } from "@/components/InterpretationResult";
 import { DreamInfographic } from "@/components/DreamInfographic";
 import { useInterpretDream } from "@/hooks/useInterpretDream";
-import { useAuth } from "@/contexts/AuthContext";
 import { Moon, BookOpen, RefreshCw, Sparkles, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -57,8 +56,6 @@ const organizationJsonLd = {
 
 const Index = () => {
   const interpretSectionRef = useRef<HTMLDivElement>(null);
-  const { subscription, user } = useAuth();
-  const isPremium = true; // BinSirin is a free khidma — every feature is open.
   const {
     interpretation,
     isLoading,
@@ -106,15 +103,6 @@ const Index = () => {
             <a href="#faq" className="text-muted-foreground hover:text-gold transition-colors">
               FAQ
             </a>
-            {user ? (
-              <Link to="/journal" className="text-muted-foreground hover:text-gold transition-colors">
-                Journal
-              </Link>
-            ) : (
-              <Link to="/auth" className="text-gold hover:opacity-80 transition-opacity">
-                Sign in
-              </Link>
-            )}
           </div>
         </nav>
 

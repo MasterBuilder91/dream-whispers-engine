@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Generated at build time — do not commit
+netlify/edge-functions/db-index.json
