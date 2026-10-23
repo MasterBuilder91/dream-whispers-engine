@@ -4,7 +4,6 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { Moon, Heart, BookOpen, Sparkles, HandHeart, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 const PRESET_AMOUNTS = [10, 25, 50, 100, 250, 500, 1000] as const;
@@ -51,10 +50,13 @@ export default function Support() {
 
     setLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke("create-donation", {
-        body: { amount },
+      const res = await fetch("/api/create-donation", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount }),
       });
-      if (error) throw error;
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || "Checkout failed.");
       if (data?.url) {
         window.location.href = data.url;
       } else {
