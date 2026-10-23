@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { toast } from "@/hooks/use-toast";
 
 const INTERPRET_URL = "/api/interpret-dream";
@@ -18,11 +18,6 @@ export interface LimitError {
   retryAfter?: number | null;
 }
 
-interface UseInterpretDreamOptions {
-  /** When false, the infographic is skipped and the caller shows an upgrade CTA. */
-  canUseInfographic?: boolean;
-}
-
 interface UseInterpretDreamReturn {
   interpretation: string;
   isLoading: boolean;
@@ -31,11 +26,13 @@ interface UseInterpretDreamReturn {
   isGeneratingInfographic: boolean;
   limitError: LimitError | null;
   interpretDream: (dreamDescription: string) => Promise<void>;
+  requestInfographic: () => Promise<void>;
   reset: () => void;
 }
 
-export function useInterpretDream(options: UseInterpretDreamOptions = {}): UseInterpretDreamReturn {
-  const { canUseInfographic = false } = options;
+export function useInterpretDream(): UseInterpretDreamReturn {
+  const lastDreamRef = useRef("");
+  const lastInterpretationRef = useRef("");
   const [interpretation, setInterpretation] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [sources, setSources] = useState<SourceCitation[]>([]);
@@ -51,7 +48,10 @@ export function useInterpretDream(options: UseInterpretDreamOptions = {}): UseIn
     setLimitError(null);
   }, []);
 
-  const generateInfographic = useCallback(async (dreamDescription: string, interpretationText: string) => {
+  const requestInfographic = useCallback(async () => {
+    const dreamDescription = lastDreamRef.current;
+    const interpretationText = lastInterpretationRef.current;
+    if (!dreamDescription || !interpretationText) return;
     setIsGeneratingInfographic(true);
     try {
       const response = await fetch(INFOGRAPHIC_URL, {
@@ -59,7 +59,6 @@ export function useInterpretDream(options: UseInterpretDreamOptions = {}): UseIn
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ dreamDescription, interpretation: interpretationText }),
       });
-
       if (response.ok) {
         const data = await response.json();
         if (data.imageUrl) setInfographicUrl(data.imageUrl);
@@ -80,6 +79,8 @@ export function useInterpretDream(options: UseInterpretDreamOptions = {}): UseIn
     setInfographicUrl(null);
     setIsGeneratingInfographic(false);
     setLimitError(null);
+    lastDreamRef.current = dreamDescription;
+    lastInterpretationRef.current = "";
 
     let collectedSources: SourceCitation[] = [];
     let fullInterpretation = "";
@@ -196,9 +197,7 @@ export function useInterpretDream(options: UseInterpretDreamOptions = {}): UseIn
       }
 
       void collectedSources;
-      if (canUseInfographic && fullInterpretation) {
-        void generateInfographic(dreamDescription, fullInterpretation);
-      }
+      lastInterpretationRef.current = fullInterpretation;
     } catch (error) {
       console.error("Interpretation error:", error);
       toast({
@@ -209,7 +208,7 @@ export function useInterpretDream(options: UseInterpretDreamOptions = {}): UseIn
     } finally {
       setIsLoading(false);
     }
-  }, [canUseInfographic, generateInfographic]);
+  }, []);
 
   return {
     interpretation,
@@ -219,6 +218,7 @@ export function useInterpretDream(options: UseInterpretDreamOptions = {}): UseIn
     isGeneratingInfographic,
     limitError,
     interpretDream,
+    requestInfographic,
     reset,
   };
 }

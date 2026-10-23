@@ -8,7 +8,7 @@ import { DreamInput } from "@/components/DreamInput";
 import { InterpretationResult } from "@/components/InterpretationResult";
 import { DreamInfographic } from "@/components/DreamInfographic";
 import { useInterpretDream } from "@/hooks/useInterpretDream";
-import { Moon, BookOpen, RefreshCw, Sparkles, Lock } from "lucide-react";
+import { Moon, BookOpen, RefreshCw, Sparkles, Lock, ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const faqJsonLd = {
@@ -64,8 +64,9 @@ const Index = () => {
     isGeneratingInfographic,
     limitError,
     interpretDream,
+    requestInfographic,
     reset,
-  } = useInterpretDream({ canUseInfographic: true });
+  } = useInterpretDream();
 
   const handleDreamSubmit = (dream: string) => {
     interpretDream(dream);
@@ -143,6 +144,19 @@ const Index = () => {
               isStreaming={isLoading}
               sources={sources}
             />
+
+            {interpretation && !isLoading && !infographicUrl && !isGeneratingInfographic && (
+              <div className="w-full max-w-3xl mx-auto mt-4 flex justify-center">
+                <Button
+                  variant="outline"
+                  onClick={requestInfographic}
+                  className="border-gold/30 hover:bg-gold/10 gap-2"
+                >
+                  <ImageIcon className="w-4 h-4 text-gold" />
+                  Generate Illuminated Image
+                </Button>
+              </div>
+            )}
 
             <DreamInfographic
               imageUrl={infographicUrl}
