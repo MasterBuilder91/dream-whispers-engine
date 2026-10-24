@@ -152,8 +152,11 @@ export const onRequest = async ({
     const apiKey = env.GEMINI_API_KEY;
     if (!apiKey) throw new Error("GEMINI_API_KEY is not configured");
 
-    // Step 1: Extract symbols
-    let searchTerms = await extractSymbols(apiKey, dreamDescription);
+    // Step 1: Extract symbols (2s timeout — fall back to simple extraction if slow)
+    let searchTerms = await Promise.race([
+      extractSymbols(apiKey, dreamDescription),
+      new Promise<string[]>(resolve => setTimeout(() => resolve([]), 2000)),
+    ]);
 
     // Fallback: simple keyword extraction
     if (searchTerms.length === 0) {
@@ -168,15 +171,6 @@ export const onRequest = async ({
 
     // Step 2: Search JSON index
     let entries = searchIndex(searchTerms);
-
-    // Step 3: Conceptual mapping fallback
-    if (entries.length === 0 && searchTerms.length > 0) {
-      const classicalTerms = await conceptualMap(apiKey, searchTerms);
-      if (classicalTerms.length > 0) {
-        entries = searchIndex(classicalTerms);
-        entries = entries.map(e => ({ ...e, matchType: "mapped" }));
-      }
-    }
 
     const formattedEntries = entries.length > 0
       ? entries.map((e, i) => `[${i + 1}] ${e.source} - "${e.title}":\n${e.content.slice(0, 800)}`).join("\n\n---\n\n")
