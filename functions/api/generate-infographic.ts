@@ -61,7 +61,7 @@ Rules:
     const symbolUserPrompt = `Dream:\n"""\n${dreamDescription}\n"""\n\nInterpretation:\n"""\n${interpretation ?? "(no interpretation provided)"}\n"""\n\nExtract the symbols as JSON.`;
 
     const extractRes = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -112,7 +112,7 @@ Rules:
     const imagePrompt = buildImagePrompt(symbols);
 
     const imgRes = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },

@@ -78,7 +78,7 @@ Example: ["snake", "ثعبان", "water", "ماء", "father", "أب"]
 Do NOT include: proper names, pronouns, connectors, or generic words.`;
 
   const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -112,7 +112,7 @@ Return ONLY a JSON array of 4-8 classical symbol keywords in both English and Ar
 If the items are already classical (snake, water, father), return them as-is.`;
 
   const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -266,7 +266,7 @@ Output TWO sections following the language-handling rules in your system prompt:
 2. **## [Heading in the user's detected language]** — a complete parallel interpretation in the user's language. Skip this second section ONLY if the user wrote in Arabic (any dialect).`;
 
     const geminiRes = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:streamGenerateContent?alt=sse&key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:streamGenerateContent?alt=sse&key=${apiKey}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
