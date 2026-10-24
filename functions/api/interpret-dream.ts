@@ -280,7 +280,8 @@ Output TWO sections following the language-handling rules in your system prompt:
 
     if (!geminiRes.ok) {
       const err = await geminiRes.text();
-      return new Response(JSON.stringify({ error: `Gemini ${geminiRes.status}: ${err.slice(0, 300)}` }), {
+      console.error("Gemini error:", geminiRes.status, err.slice(0, 500));
+      return new Response(JSON.stringify({ error: "AI interpretation failed" }), {
         status: 502, headers: { ...CORS, "Content-Type": "application/json" }
       });
     }
