@@ -33,7 +33,7 @@ async function main() {
     if (!title || content.length < 30) continue;
     // Skip rows where the content is just book metadata (publisher, title page)
     if (content.includes('الناشر:') && content.indexOf('الناشر:') < 80) continue;
-    entries.push({ t: title, c: content.slice(0, 700), s: 'N' });
+    entries.push({ t: title, c: content.slice(0, 500), s: 'N' });
     alCount++;
   }
   alDb.close();
@@ -53,7 +53,7 @@ async function main() {
     const content = String(row[1]).trim();
     if (content.length < 100) continue;
     if (content.includes('الناشر:') && content.indexOf('الناشر:') < 80) continue;
-    entries.push({ t: title, c: content.slice(0, 700), s: 'I' });
+    entries.push({ t: title, c: content.slice(0, 500), s: 'I' });
     ibnCount++;
   }
   ibnDb.close();
@@ -61,7 +61,7 @@ async function main() {
 
   console.log(`Total entries: ${entries.length}`);
 
-  const outDir = join(ROOT, 'netlify/edge-functions');
+  const outDir = join(ROOT, 'functions/api');
   mkdirSync(outDir, { recursive: true });
   const outPath = join(outDir, 'db-index.json');
   writeFileSync(outPath, JSON.stringify(entries));

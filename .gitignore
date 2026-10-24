@@ -25,3 +25,4 @@ dist-ssr
 
 # Generated at build time — do not commit
 netlify/edge-functions/db-index.json
+functions/api/db-index.json
