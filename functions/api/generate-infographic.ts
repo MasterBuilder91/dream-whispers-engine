@@ -125,8 +125,7 @@ Rules:
 
     if (!imgRes.ok) {
       const errText = await imgRes.text();
-      console.error("Image generation failed:", imgRes.status, errText.slice(0, 500));
-      return new Response(JSON.stringify({ error: "Image generation failed" }), {
+      return new Response(JSON.stringify({ error: `Image ${imgRes.status}: ${errText.slice(0, 400)}` }), {
         status: 502, headers: { ...CORS, "Content-Type": "application/json" }
       });
     }
